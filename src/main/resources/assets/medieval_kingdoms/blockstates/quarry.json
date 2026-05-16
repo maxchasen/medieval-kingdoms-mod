@@ -1,7 +1,7 @@
 {
-	"variants": {
-		"": {
-			"model": "medieval_kingdoms:block/quarry"
-		}
-	}
+  "variants": {
+    "": {
+      "model": "medieval_kingdoms:block/quarry"
+    }
+  }
 }
