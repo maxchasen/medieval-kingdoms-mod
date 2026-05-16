@@ -2,8 +2,9 @@ package com.medievalkingdoms.features.economy.ai;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.Predicate;
 
-import com.medievalkingdoms.features.economy.ArmorsmithVillagerEntity;
+import com.medievalkingdoms.features.economy.IronMaterialPickupMob;
 
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -24,12 +25,19 @@ public final class PickupIronMaterialsGoal extends Goal {
 
 	private final PathfinderMob mob;
 	private final double speedModifier;
+	private final Predicate<ItemStack> pickupPredicate;
 	@Nullable
 	private ItemEntity targetItem;
 
 	public PickupIronMaterialsGoal(PathfinderMob pathfinderMob, double speedModifier) {
+		this(pathfinderMob, speedModifier, PickupIronMaterialsGoal::stackIsArmorsmithPickup);
+	}
+
+	public PickupIronMaterialsGoal(
+			PathfinderMob pathfinderMob, double speedModifier, Predicate<ItemStack> pickupPredicate) {
 		this.mob = pathfinderMob;
 		this.speedModifier = speedModifier;
+		this.pickupPredicate = pickupPredicate;
 		this.setFlags(EnumSet.of(Flag.MOVE));
 	}
 
@@ -38,11 +46,19 @@ public final class PickupIronMaterialsGoal extends Goal {
 				&& (stack.is(Items.RAW_IRON) || stack.is(Items.IRON_ORE) || stack.is(ItemTags.IRON_ORES));
 	}
 
-	public static boolean isEligibleItemEntity(ItemEntity itemEntity) {
+	public static boolean stackIsWeaponsmithPickup(ItemStack stack) {
+		return stackIsArmorsmithPickup(stack) || stack.is(Items.IRON_INGOT);
+	}
+
+	private boolean isEligibleStack(ItemStack stack) {
+		return !stack.isEmpty() && this.pickupPredicate.test(stack);
+	}
+
+	private boolean isEligibleItemEntity(ItemEntity itemEntity) {
 		return itemEntity.isAlive()
 				&& !itemEntity.getItem().isEmpty()
 				&& !itemEntity.hasPickUpDelay()
-				&& stackIsArmorsmithPickup(itemEntity.getItem());
+				&& isEligibleStack(itemEntity.getItem());
 	}
 
 	@Override
@@ -83,8 +99,8 @@ public final class PickupIronMaterialsGoal extends Goal {
 		}
 
 		if (this.mob.distanceToSqr(this.targetItem) < TRY_PICKUP_DISTANCE_SQ) {
-			if (this.mob instanceof ArmorsmithVillagerEntity armorsmith) {
-				armorsmith.tryPickupIronItem(this.targetItem);
+			if (this.mob instanceof IronMaterialPickupMob pickupMob) {
+				pickupMob.tryPickupIronItem(this.targetItem);
 			}
 			return;
 		}
@@ -97,9 +113,7 @@ public final class PickupIronMaterialsGoal extends Goal {
 	@Nullable
 	private ItemEntity findNearestEligible() {
 		AABB search = this.mob.getBoundingBox().inflate(ITEM_SEARCH_RANGE);
-		List<ItemEntity> nearby = this.mob
-				.level()
-				.getEntitiesOfClass(ItemEntity.class, search, PickupIronMaterialsGoal::isEligibleItemEntity);
+		List<ItemEntity> nearby = this.mob.level().getEntitiesOfClass(ItemEntity.class, search, this::isEligibleItemEntity);
 		ItemEntity nearest = null;
 		double nearestDistSq = Double.MAX_VALUE;
 		for (ItemEntity entity : nearby) {

@@ -22,10 +22,38 @@ public final class ModEconomyItems {
 			new SpawnEggItem(
 					new Item.Properties().setId(ARMORSMITH_SPAWN_EGG_KEY).spawnEgg(ModEconomyEntityTypes.ARMORSMITH_VILLAGER)));
 
+	public static final ResourceKey<Item> WEAPONSMITH_SPAWN_EGG_KEY = ResourceKey.create(
+			Registries.ITEM,
+			MedievalKingdomsMod.id("weaponsmith_spawn_egg"));
+
+	public static final Item WEAPONSMITH_SPAWN_EGG = Registry.register(
+			BuiltInRegistries.ITEM,
+			WEAPONSMITH_SPAWN_EGG_KEY,
+			new SpawnEggItem(
+					new Item.Properties()
+							.setId(WEAPONSMITH_SPAWN_EGG_KEY)
+							.spawnEgg(ModEconomyEntityTypes.WEAPONSMITH_VILLAGER)));
+
+	public static final ResourceKey<Item> FLETCHER_SPAWN_EGG_KEY = ResourceKey.create(
+			Registries.ITEM,
+			MedievalKingdomsMod.id("fletcher_spawn_egg"));
+
+	public static final Item FLETCHER_SPAWN_EGG = Registry.register(
+			BuiltInRegistries.ITEM,
+			FLETCHER_SPAWN_EGG_KEY,
+			new SpawnEggItem(
+					new Item.Properties()
+							.setId(FLETCHER_SPAWN_EGG_KEY)
+							.spawnEgg(ModEconomyEntityTypes.FLETCHER_VILLAGER)));
+
 	private ModEconomyItems() {
 	}
 
 	public static void register() {
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.SPAWN_EGGS).register(entries -> entries.accept(ARMORSMITH_SPAWN_EGG));
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.SPAWN_EGGS).register(entries -> {
+			entries.accept(ARMORSMITH_SPAWN_EGG);
+			entries.accept(WEAPONSMITH_SPAWN_EGG);
+			entries.accept(FLETCHER_SPAWN_EGG);
+		});
 	}
 }

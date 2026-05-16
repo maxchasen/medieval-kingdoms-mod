@@ -1,5 +1,7 @@
 package com.medievalkingdoms.features.combat.entity;
 
+import com.medievalkingdoms.features.crown.CrownFollowGoal;
+
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
@@ -44,6 +46,7 @@ public final class ArcherEntity extends PathfinderMob implements RangedAttackMob
 	@Override
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new FloatGoal(this));
+		this.goalSelector.addGoal(1, new CrownFollowGoal(this));
 		this.goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0D, 20, 40, 15.0F));
 		this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.6D));
 		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));

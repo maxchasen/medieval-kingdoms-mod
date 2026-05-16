@@ -16,11 +16,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
- * Economy villager role: collects iron inputs for smithing.
+ * Economy villager role: collects iron inputs plus ingots for smithing weapons.
  */
-public final class ArmorsmithVillagerEntity extends PathfinderMob implements IronMaterialPickupMob {
-	// TODO: smelting simulation
-	public ArmorsmithVillagerEntity(EntityType<? extends ArmorsmithVillagerEntity> entityType, Level level) {
+public final class WeaponsmithVillagerEntity extends PathfinderMob implements IronMaterialPickupMob {
+	public WeaponsmithVillagerEntity(EntityType<? extends WeaponsmithVillagerEntity> entityType, Level level) {
 		super(entityType, level);
 		this.setCanPickUpLoot(true);
 	}
@@ -34,10 +33,9 @@ public final class ArmorsmithVillagerEntity extends PathfinderMob implements Iro
 
 	@Override
 	public boolean wantsToPickUp(ServerLevel serverLevel, ItemStack stack) {
-		return PickupIronMaterialsGoal.stackIsArmorsmithPickup(stack) && super.wantsToPickUp(serverLevel, stack);
+		return PickupIronMaterialsGoal.stackIsWeaponsmithPickup(stack) && super.wantsToPickUp(serverLevel, stack);
 	}
 
-	/** Called when in range of a drop so pickup works even if {@code mobGriefing} is off. */
 	@Override
 	public void tryPickupIronItem(ItemEntity itemEntity) {
 		if (this.level() instanceof ServerLevel serverLevel
@@ -50,7 +48,7 @@ public final class ArmorsmithVillagerEntity extends PathfinderMob implements Iro
 	@Override
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new FloatGoal(this));
-		this.goalSelector.addGoal(2, new PickupIronMaterialsGoal(this, 1.0D, PickupIronMaterialsGoal::stackIsArmorsmithPickup));
+		this.goalSelector.addGoal(2, new PickupIronMaterialsGoal(this, 1.0D, PickupIronMaterialsGoal::stackIsWeaponsmithPickup));
 		this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.6D));
 		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
 	}

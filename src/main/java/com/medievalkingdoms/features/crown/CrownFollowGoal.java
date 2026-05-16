@@ -1,6 +1,5 @@
 package com.medievalkingdoms.features.crown;
 
-import com.medievalkingdoms.features.combat.entity.KnightEntity;
 import com.medievalkingdoms.features.realm.KingdomWorldData;
 
 import java.util.EnumSet;
@@ -8,14 +7,15 @@ import java.util.List;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.phys.AABB;
 
 /**
  * Paths toward the nearest warlord-crowned kingdom owner within range (PRD §5.1).
- * Disengages while the knight has an attack target or is reacting to damage.
+ * Disengages while the mob has an attack target or is reacting to damage.
  */
 public final class CrownFollowGoal extends Goal {
 	private static final double MAX_RANGE = 32.0D;
@@ -23,20 +23,20 @@ public final class CrownFollowGoal extends Goal {
 	private static final double STOP_NEAR_SQ = 6.0D * 6.0D;
 	private static final double SPEED = 1.0D;
 
-	private final KnightEntity knight;
+	private final PathfinderMob mob;
 	private ServerPlayer followTarget;
 
-	public CrownFollowGoal(KnightEntity knight) {
-		this.knight = knight;
+	public CrownFollowGoal(PathfinderMob mob) {
+		this.mob = mob;
 		this.setFlags(EnumSet.of(Flag.MOVE));
 	}
 
 	@Override
 	public boolean canUse() {
-		if (this.knight.level().isClientSide()) {
+		if (this.mob.level().isClientSide()) {
 			return false;
 		}
-		if (!(this.knight.level() instanceof ServerLevel sl)) {
+		if (!(this.mob.level() instanceof ServerLevel sl)) {
 			return false;
 		}
 		if (!mayFollowWarlord()) {
@@ -46,15 +46,15 @@ public final class CrownFollowGoal extends Goal {
 		if (player == null) {
 			return false;
 		}
-		return this.knight.distanceToSqr(player) > STOP_NEAR_SQ;
+		return this.mob.distanceToSqr(player) > STOP_NEAR_SQ;
 	}
 
 	@Override
 	public boolean canContinueToUse() {
-		if (this.knight.level().isClientSide()) {
+		if (this.mob.level().isClientSide()) {
 			return false;
 		}
-		if (!(this.knight.level() instanceof ServerLevel sl)) {
+		if (!(this.mob.level() instanceof ServerLevel sl)) {
 			return false;
 		}
 		if (!mayFollowWarlord()) {
@@ -63,7 +63,7 @@ public final class CrownFollowGoal extends Goal {
 		if (this.followTarget == null || !this.followTarget.isAlive()) {
 			return false;
 		}
-		if (this.knight.distanceToSqr(this.followTarget) > MAX_RANGE_SQ) {
+		if (this.mob.distanceToSqr(this.followTarget) > MAX_RANGE_SQ) {
 			return false;
 		}
 		if (!wearsWarlordCrown(this.followTarget)) {
@@ -72,12 +72,12 @@ public final class CrownFollowGoal extends Goal {
 		if (!KingdomWorldData.get(sl).isKingdomOwner(this.followTarget.getUUID())) {
 			return false;
 		}
-		return this.knight.distanceToSqr(this.followTarget) > STOP_NEAR_SQ;
+		return this.mob.distanceToSqr(this.followTarget) > STOP_NEAR_SQ;
 	}
 
 	@Override
 	public void start() {
-		if (this.knight.level() instanceof ServerLevel sl) {
+		if (this.mob.level() instanceof ServerLevel sl) {
 			this.followTarget = findNearestCrownedOwner(sl);
 		}
 	}
@@ -85,22 +85,22 @@ public final class CrownFollowGoal extends Goal {
 	@Override
 	public void stop() {
 		this.followTarget = null;
-		this.knight.getNavigation().stop();
+		this.mob.getNavigation().stop();
 	}
 
 	@Override
 	public void tick() {
 		if (this.followTarget != null) {
-			this.knight.getNavigation().moveTo(this.followTarget, SPEED);
+			this.mob.getNavigation().moveTo(this.followTarget, SPEED);
 		}
 	}
 
 	private boolean mayFollowWarlord() {
-		return this.knight.getTarget() == null && this.knight.hurtTime <= 0;
+		return this.mob.getTarget() == null && this.mob.hurtTime <= 0;
 	}
 
 	private ServerPlayer findNearestCrownedOwner(ServerLevel level) {
-		AABB box = this.knight.getBoundingBox().inflate(MAX_RANGE, MAX_RANGE, MAX_RANGE);
+		AABB box = this.mob.getBoundingBox().inflate(MAX_RANGE, MAX_RANGE, MAX_RANGE);
 		List<Player> candidates = level.getEntitiesOfClass(Player.class, box, p -> true);
 		ServerPlayer best = null;
 		double bestDist = MAX_RANGE_SQ;
@@ -115,7 +115,7 @@ public final class CrownFollowGoal extends Goal {
 			if (!data.isKingdomOwner(sp.getUUID())) {
 				continue;
 			}
-			double d = this.knight.distanceToSqr(sp);
+			double d = this.mob.distanceToSqr(sp);
 			if (d <= bestDist) {
 				bestDist = d;
 				best = sp;

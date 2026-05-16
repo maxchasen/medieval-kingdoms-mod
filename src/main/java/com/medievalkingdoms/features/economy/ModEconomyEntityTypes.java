@@ -23,10 +23,36 @@ public final class ModEconomyEntityTypes {
 					.clientTrackingRange(10)
 					.build(ARMORSMITH_VILLAGER_KEY));
 
+	public static final ResourceKey<EntityType<?>> WEAPONSMITH_VILLAGER_KEY = ResourceKey.create(
+			Registries.ENTITY_TYPE,
+			MedievalKingdomsMod.id("weaponsmith_villager"));
+
+	public static final EntityType<WeaponsmithVillagerEntity> WEAPONSMITH_VILLAGER = Registry.register(
+			BuiltInRegistries.ENTITY_TYPE,
+			WEAPONSMITH_VILLAGER_KEY,
+			EntityType.Builder.of(WeaponsmithVillagerEntity::new, MobCategory.CREATURE)
+					.sized(0.6F, 1.95F)
+					.clientTrackingRange(10)
+					.build(WEAPONSMITH_VILLAGER_KEY));
+
+	public static final ResourceKey<EntityType<?>> FLETCHER_VILLAGER_KEY = ResourceKey.create(
+			Registries.ENTITY_TYPE,
+			MedievalKingdomsMod.id("fletcher_villager"));
+
+	public static final EntityType<FletcherVillagerEntity> FLETCHER_VILLAGER = Registry.register(
+			BuiltInRegistries.ENTITY_TYPE,
+			FLETCHER_VILLAGER_KEY,
+			EntityType.Builder.of(FletcherVillagerEntity::new, MobCategory.CREATURE)
+					.sized(0.6F, 1.95F)
+					.clientTrackingRange(10)
+					.build(FLETCHER_VILLAGER_KEY));
+
 	private ModEconomyEntityTypes() {
 	}
 
 	public static void register() {
 		FabricDefaultAttributeRegistry.register(ARMORSMITH_VILLAGER, ArmorsmithVillagerEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(WEAPONSMITH_VILLAGER, WeaponsmithVillagerEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(FLETCHER_VILLAGER, FletcherVillagerEntity.createAttributes());
 	}
 }

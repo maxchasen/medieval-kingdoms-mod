@@ -15,6 +15,8 @@ import net.minecraft.world.item.component.CustomData;
 public final class MedievalKingdomsMobTags {
 	/** Root compound key storing kingdom UUID as {@link UUIDUtil#uuidToIntArray(UUID)}. */
 	public static final String KINGDOM_ID = "mk_kingdom";
+	/** Village / baby role id from weighted roll (e.g. {@code knight}, {@code archer}). */
+	public static final String VILLAGE_ROLE_ID = "mk_role";
 
 	private MedievalKingdomsMobTags() {
 	}
@@ -41,6 +43,17 @@ public final class MedievalKingdomsMobTags {
 	public static void removeKingdomId(Entity entity) {
 		CustomData next = entity.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
 				.update(tag -> tag.remove(KINGDOM_ID));
+		entity.setComponent(DataComponents.CUSTOM_DATA, next.isEmpty() ? CustomData.EMPTY : next);
+	}
+
+	public static Optional<String> readVillageRole(Entity entity) {
+		var root = entity.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+		return root.getString(VILLAGE_ROLE_ID).filter(s -> !s.isEmpty());
+	}
+
+	public static void writeVillageRole(Entity entity, String roleId) {
+		CustomData next = entity.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+				.update(tag -> tag.putString(VILLAGE_ROLE_ID, roleId));
 		entity.setComponent(DataComponents.CUSTOM_DATA, next.isEmpty() ? CustomData.EMPTY : next);
 	}
 }

@@ -2,14 +2,19 @@ package com.medievalkingdoms.features.realm;
 
 import java.util.UUID;
 
+import com.medievalkingdoms.features.alliance.AllianceOpenUiPayload;
 import com.medievalkingdoms.features.faction.VillagerKingdom;
 import com.mojang.serialization.MapCodec;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -40,6 +45,39 @@ public final class KingdomSigilBlock extends BaseEntityBlock {
 				.strength(200.0F, 3600.0F)
 				.sound(SoundType.METAL)
 				.requiresCorrectToolForDrops();
+	}
+
+	/**
+	 * Handles alliance table open for the sigil owner when main hand is empty or the player is sneaking.
+	 * Wired from {@link com.medievalkingdoms.features.alliance.AllianceUiFeature} via Fabric {@code UseBlockCallback}
+	 * (1.21.11 splits item vs empty-hand block use; this keeps one server-authoritative path).
+	 */
+	public static InteractionResult allianceTableUse(Level level, BlockPos pos, Player player, InteractionHand hand) {
+		if (hand != InteractionHand.MAIN_HAND) {
+			return InteractionResult.PASS;
+		}
+		if (!(player instanceof ServerPlayer serverPlayer)) {
+			return InteractionResult.PASS;
+		}
+		if (level.isClientSide()) {
+			return InteractionResult.PASS;
+		}
+		if (!player.getMainHandItem().isEmpty() && !player.isShiftKeyDown()) {
+			return InteractionResult.PASS;
+		}
+		if (!(level.getBlockState(pos).getBlock() instanceof KingdomSigilBlock)) {
+			return InteractionResult.PASS;
+		}
+		if (!(level.getBlockEntity(pos) instanceof KingdomSigilBlockEntity sigil)) {
+			return InteractionResult.PASS;
+		}
+		UUID kingdomId = sigil.getKingdomId();
+		UUID owner = sigil.getOwner();
+		if (kingdomId == null || owner == null || !owner.equals(player.getUUID())) {
+			return InteractionResult.PASS;
+		}
+		ServerPlayNetworking.send(serverPlayer, new AllianceOpenUiPayload(pos, kingdomId));
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override

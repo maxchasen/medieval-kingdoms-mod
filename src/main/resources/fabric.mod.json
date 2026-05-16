@@ -24,13 +24,16 @@
 			"com.medievalkingdoms.features.crown.CrownFollowFeature",
 			"com.medievalkingdoms.features.faction.FactionFeature",
 			"com.medievalkingdoms.features.alliance.AllianceFeature",
-			"com.medievalkingdoms.features.economy.EconomyFeature"
+			"com.medievalkingdoms.features.economy.EconomyFeature",
+			"com.medievalkingdoms.features.combat.CombatKingdomTagFeature",
+			"com.medievalkingdoms.features.miner.MinerLogisticsFeature",
+			"com.medievalkingdoms.features.alliance.AllianceUiFeature"
 		],
 		"client": [
 			"com.medievalkingdoms.client.MedievalKingdomsModClient",
 			"com.medievalkingdoms.client.CombatEntityClient",
 			"com.medievalkingdoms.client.EconomyEntityClient",
-			"com.medievalkingdoms.client.AllianceClient"
+			"com.medievalkingdoms.client.AllianceUiClient"
 		]
 	},
 	"mixins": [

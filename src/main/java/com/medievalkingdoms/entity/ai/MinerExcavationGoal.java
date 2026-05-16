@@ -1,10 +1,12 @@
 package com.medievalkingdoms.entity.ai;
 
 import com.medievalkingdoms.MedievalKingdomsMod;
+import com.medievalkingdoms.features.miner.MinerLogistics;
 import com.medievalkingdoms.registry.ModBlocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -141,7 +143,9 @@ public final class MinerExcavationGoal extends Goal {
 			}
 			BlockState state = level.getBlockState(probe);
 			if (!state.isAir() && state.is(MINER_MINEABLE)) {
-				level.destroyBlock(probe.immutable(), true, this.mob);
+				if (level instanceof ServerLevel serverLevel) {
+					MinerLogistics.tryHarvestIntoNearbyStorage(serverLevel, this.mob, probe.immutable(), state);
+				}
 				break;
 			}
 		}

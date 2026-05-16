@@ -13,7 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Kingdom role weight hook: server baby villagers after {@link Villager#finalizeSpawn} completes (covers breeding and other baby spawns).
+ * After {@link Villager#finalizeSpawn} (breeding and other baby spawns), rolls {@link VillageRoleConfig} for server babies
+ * and may set {@link com.medievalkingdoms.features.faction.MedievalKingdomsMobTags#VILLAGE_ROLE_ID} on entity custom data.
  */
 @Mixin(Villager.class)
 public class VillagerBabySpawnMixin {
