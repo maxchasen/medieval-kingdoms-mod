@@ -43,11 +43,11 @@ public final class CombatKingdomTagFeature implements ModInitializer {
 			}
 		}
 		if (entity instanceof KnightEntity knight) {
-			KingdomMobLabels.applyRoleName(knight, world, "Knight");
+			KingdomMobLabels.refreshForEntity(knight, world);
 		} else if (entity instanceof ArcherEntity archer) {
-			KingdomMobLabels.applyRoleName(archer, world, "Archer");
+			KingdomMobLabels.refreshForEntity(archer, world);
 		} else if (entity instanceof MinerEntity miner) {
-			KingdomMobLabels.applyRoleName(miner, world, "Miner");
+			KingdomMobLabels.refreshForEntity(miner, world);
 		}
 	}
 

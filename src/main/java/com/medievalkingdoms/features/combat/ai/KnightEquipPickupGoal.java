@@ -17,7 +17,7 @@ import com.medievalkingdoms.features.combat.entity.KnightEntity;
 
 import org.jspecify.annotations.Nullable;
 
-/** Picks up iron swords and any equippable helmet for knights with empty slots. */
+/** Picks up iron swords and any equippable armor for knights with empty slots. */
 public final class KnightEquipPickupGoal extends Goal {
 	private static final double RANGE = 10.0D;
 	private static final double RANGE_SQ = RANGE * RANGE;
@@ -97,8 +97,12 @@ public final class KnightEquipPickupGoal extends Goal {
 			return;
 		}
 		Equippable equip = stack.get(DataComponents.EQUIPPABLE);
-		if (equip != null && equip.slot() == EquipmentSlot.HEAD && this.knight.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
-			this.knight.setItemSlot(EquipmentSlot.HEAD, stack.split(1));
+		if (equip == null) {
+			return;
+		}
+		EquipmentSlot slot = equip.slot();
+		if (isArmorSlot(slot) && this.knight.getItemBySlot(slot).isEmpty()) {
+			this.knight.setItemSlot(slot, stack.split(1));
 		}
 	}
 
@@ -106,26 +110,35 @@ public final class KnightEquipPickupGoal extends Goal {
 		if (isSword(stack)) {
 			return this.knight.getMainHandItem().isEmpty();
 		}
-		if (isHelmet(stack)) {
-			return this.knight.getItemBySlot(EquipmentSlot.HEAD).isEmpty();
+		Equippable equip = stack.get(DataComponents.EQUIPPABLE);
+		if (equip == null) {
+			return false;
 		}
-		return false;
+		EquipmentSlot slot = equip.slot();
+		return isArmorSlot(slot) && this.knight.getItemBySlot(slot).isEmpty();
 	}
 
 	private static boolean isKnightEquipLoot(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return false;
 		}
-		return isSword(stack) || isHelmet(stack);
+		return isSword(stack) || isArmor(stack);
 	}
 
 	private static boolean isSword(ItemStack stack) {
 		return stack.is(net.minecraft.world.item.Items.IRON_SWORD);
 	}
 
-	private static boolean isHelmet(ItemStack stack) {
+	private static boolean isArmor(ItemStack stack) {
 		Equippable equip = stack.get(DataComponents.EQUIPPABLE);
-		return equip != null && equip.slot() == EquipmentSlot.HEAD;
+		return equip != null && isArmorSlot(equip.slot());
+	}
+
+	private static boolean isArmorSlot(EquipmentSlot slot) {
+		return slot == EquipmentSlot.HEAD
+				|| slot == EquipmentSlot.CHEST
+				|| slot == EquipmentSlot.LEGS
+				|| slot == EquipmentSlot.FEET;
 	}
 
 	@Nullable

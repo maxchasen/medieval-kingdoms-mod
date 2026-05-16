@@ -28,7 +28,7 @@ public final class MinerJobsFeature implements ModInitializer {
 				pick.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
 				miner.setItemSlot(EquipmentSlot.MAINHAND, pick);
 			}
-			KingdomMobLabels.applyRoleName(miner, serverLevel, "Miner");
+			KingdomMobLabels.refreshForEntity(miner, serverLevel);
 		});
 	}
 }

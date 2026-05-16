@@ -10,6 +10,7 @@ import com.medievalkingdoms.features.realm.KingdomSigilBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -17,7 +18,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 
 /**
- * Assigns nearby villagers to a kingdom sigil territory using {@link MedievalKingdomsMobTags}.
+ * Assigns nearby villagers and kingdom workforce to a kingdom sigil territory using {@link MedievalKingdomsMobTags}.
  */
 public final class VillagerKingdom {
 	public static final int DEFAULT_HORIZONTAL_RADIUS = 64;
@@ -37,16 +38,33 @@ public final class VillagerKingdom {
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, volume, v -> true)) {
 			assignIfEligible(villager, kingdomId);
 		}
+		for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, volume, KingdomMobLabels::isKingdomWorkforce)) {
+			if (entity instanceof Villager) {
+				continue;
+			}
+			assignWorkforceIfEligible(entity, kingdomId);
+		}
+		refreshNametagsInVolume(level, volume, kingdomId);
 	}
 
 	/** Periodically call from villagers so walking into territory after the sigil exists still tags them. */
 	public static void tryTagFromNearbySigil(ServerLevel level, Villager villager) {
-		if (MedievalKingdomsMobTags.readKingdomId(villager).isPresent()) {
+		Optional<UUID> existing = MedievalKingdomsMobTags.readKingdomId(villager);
+		if (existing.isPresent()) {
+			KingdomMobLabels.refreshForEntity(villager, level);
 			return;
 		}
 		UUID kid = nearestFoundedSigilKingdom(villager, level, DEFAULT_HORIZONTAL_RADIUS, DEFAULT_VERTICAL_RADIUS);
 		if (kid != null) {
 			assignIfEligible(villager, kid);
+		}
+	}
+
+	public static void refreshNametagsInVolume(ServerLevel level, AABB volume, UUID kingdomId) {
+		for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, volume, KingdomMobLabels::isKingdomWorkforce)) {
+			MedievalKingdomsMobTags.readKingdomId(entity)
+					.filter(kingdomId::equals)
+					.ifPresent(k -> KingdomMobLabels.refreshForEntity(entity, level));
 		}
 	}
 
@@ -109,7 +127,18 @@ public final class VillagerKingdom {
 		}
 		MedievalKingdomsMobTags.writeKingdomId(villager, kingdomId);
 		if (villager.level() instanceof ServerLevel serverLevel) {
-			KingdomMobLabels.applyRoleName(villager, serverLevel, "Villager");
+			KingdomMobLabels.refreshForEntity(villager, serverLevel);
+		}
+	}
+
+	private static void assignWorkforceIfEligible(LivingEntity entity, UUID kingdomId) {
+		Optional<UUID> existing = MedievalKingdomsMobTags.readKingdomId(entity);
+		if (existing.isPresent() && !existing.get().equals(kingdomId)) {
+			return;
+		}
+		MedievalKingdomsMobTags.writeKingdomId(entity, kingdomId);
+		if (entity.level() instanceof ServerLevel serverLevel) {
+			KingdomMobLabels.refreshForEntity(entity, serverLevel);
 		}
 	}
 
@@ -118,8 +147,12 @@ public final class VillagerKingdom {
 			return;
 		}
 		AABB volume = kingdomVolume(sigilPos, horizontalRadius, verticalRadius);
-		for (Villager villager : level.getEntitiesOfClass(Villager.class, volume, v -> true)) {
-			MedievalKingdomsMobTags.readKingdomId(villager).filter(kingdomId::equals).ifPresent(k -> MedievalKingdomsMobTags.removeKingdomId(villager));
+		for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, volume, KingdomMobLabels::isKingdomWorkforce)) {
+			MedievalKingdomsMobTags.readKingdomId(entity).filter(kingdomId::equals).ifPresent(k -> {
+				MedievalKingdomsMobTags.removeKingdomId(entity);
+				entity.setCustomName(null);
+				entity.setCustomNameVisible(false);
+			});
 		}
 	}
 

@@ -19,11 +19,11 @@ public final class EconomyFeature implements ModInitializer {
 				return;
 			}
 			if (entity instanceof ArmorsmithVillagerEntity smith) {
-				KingdomMobLabels.applyRoleName(smith, serverLevel, "Armorsmith");
+				KingdomMobLabels.refreshForEntity(smith, serverLevel);
 			} else if (entity instanceof WeaponsmithVillagerEntity wsmith) {
-				KingdomMobLabels.applyRoleName(wsmith, serverLevel, "Weaponsmith");
+				KingdomMobLabels.refreshForEntity(wsmith, serverLevel);
 			} else if (entity instanceof FletcherVillagerEntity fletcher) {
-				KingdomMobLabels.applyRoleName(fletcher, serverLevel, "Fletcher");
+				KingdomMobLabels.refreshForEntity(fletcher, serverLevel);
 			}
 		});
 	}
