@@ -25,6 +25,16 @@ public final class ArmorsmithVillagerEntity extends PathfinderMob implements Iro
 		this.setCanPickUpLoot(true);
 	}
 
+	@Override
+	protected void pickUpItem(ServerLevel serverLevel, ItemEntity itemEntity) {
+		if (!itemEntity.getItem().isEmpty() && this.wantsToPickUp(serverLevel, itemEntity.getItem())) {
+			if (PickupIronMaterialsGoal.mergeMatchingStacksIntoHands(this, itemEntity)) {
+				return;
+			}
+		}
+		super.pickUpItem(serverLevel, itemEntity);
+	}
+
 	public static AttributeSupplier.Builder createAttributes() {
 		return PathfinderMob.createMobAttributes()
 				.add(Attributes.MAX_HEALTH, 20.0D)

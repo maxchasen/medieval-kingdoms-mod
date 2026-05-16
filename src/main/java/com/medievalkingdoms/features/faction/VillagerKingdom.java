@@ -3,9 +3,17 @@ package com.medievalkingdoms.features.faction;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.medievalkingdoms.features.realm.KingdomSigilBlockEntity;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 
 /**
@@ -29,6 +37,69 @@ public final class VillagerKingdom {
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, volume, v -> true)) {
 			assignIfEligible(villager, kingdomId);
 		}
+	}
+
+	/** Periodically call from villagers so walking into territory after the sigil exists still tags them. */
+	public static void tryTagFromNearbySigil(ServerLevel level, Villager villager) {
+		if (MedievalKingdomsMobTags.readKingdomId(villager).isPresent()) {
+			return;
+		}
+		UUID kid = nearestFoundedSigilKingdom(villager, level, DEFAULT_HORIZONTAL_RADIUS, DEFAULT_VERTICAL_RADIUS);
+		if (kid != null) {
+			assignIfEligible(villager, kid);
+		}
+	}
+
+	private static @Nullable UUID nearestFoundedSigilKingdom(Entity entity, ServerLevel level, int hRadius, int vRadius) {
+		BlockPos origin = entity.blockPosition();
+		double ex = entity.getX();
+		double ey = entity.getY();
+		double ez = entity.getZ();
+
+		double hMax = hRadius;
+		double vMax = vRadius;
+
+		ChunkPos chunkMin = new ChunkPos(new BlockPos(origin.getX() - hRadius, 0, origin.getZ() - hRadius));
+		ChunkPos chunkMax = new ChunkPos(new BlockPos(origin.getX() + hRadius, 0, origin.getZ() + hRadius));
+
+		double bestSq = Double.POSITIVE_INFINITY;
+		@Nullable UUID bestId = null;
+
+		for (ChunkPos chunkPos : ChunkPos.rangeClosed(chunkMin, chunkMax).toList()) {
+			LevelChunk chunk = level.getChunkSource().getChunkNow(chunkPos.x, chunkPos.z);
+			if (chunk == null) {
+				continue;
+			}
+			for (BlockEntity candidate : chunk.getBlockEntities().values()) {
+				if (!(candidate instanceof KingdomSigilBlockEntity sigil)) {
+					continue;
+				}
+				UUID kingdomId = sigil.getKingdomId();
+				if (kingdomId == null) {
+					continue;
+				}
+				BlockPos p = candidate.getBlockPos();
+				double sx = p.getX() + 0.5;
+				double sy = p.getY() + 0.5;
+				double sz = p.getZ() + 0.5;
+				double dx = sx - ex;
+				double dz = sz - ez;
+				if (dx * dx + dz * dz > hMax * hMax) {
+					continue;
+				}
+				double dy = sy - ey;
+				if (Math.abs(dy) > vMax) {
+					continue;
+				}
+				double distSq = dx * dx + dy * dy + dz * dz;
+				if (distSq < bestSq) {
+					bestSq = distSq;
+					bestId = kingdomId;
+				}
+			}
+		}
+
+		return bestId;
 	}
 
 	private static void assignIfEligible(Villager villager, UUID kingdomId) {

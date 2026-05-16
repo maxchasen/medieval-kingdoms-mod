@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import com.medievalkingdoms.features.combat.ai.KnightEquipPickupGoal;
 import com.medievalkingdoms.features.crown.CrownFollowGoal;
 import com.medievalkingdoms.features.faction.MedievalKingdomsMobTags;
 import com.medievalkingdoms.features.realm.KingdomEntry;
@@ -43,7 +44,8 @@ public final class KnightEntity extends PathfinderMob {
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new FloatGoal(this));
 		this.goalSelector.addGoal(1, new CrownFollowGoal(this));
-		this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.2D, true));
+		this.goalSelector.addGoal(2, new KnightEquipPickupGoal(this, 1.0D));
+		this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, true));
 		this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.6D));
 		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, true));

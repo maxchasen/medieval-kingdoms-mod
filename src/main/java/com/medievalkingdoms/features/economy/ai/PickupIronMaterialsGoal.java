@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import com.medievalkingdoms.features.economy.IronMaterialPickupMob;
 
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -42,12 +43,43 @@ public final class PickupIronMaterialsGoal extends Goal {
 	}
 
 	public static boolean stackIsArmorsmithPickup(ItemStack stack) {
+		// Include ingots so behaviour matches player expectations for "smith" gatherers.
 		return !stack.isEmpty()
-				&& (stack.is(Items.RAW_IRON) || stack.is(Items.IRON_ORE) || stack.is(ItemTags.IRON_ORES));
+				&& (stack.is(Items.RAW_IRON) || stack.is(Items.IRON_INGOT) || stack.is(Items.IRON_ORE) || stack.is(ItemTags.IRON_ORES));
 	}
 
 	public static boolean stackIsWeaponsmithPickup(ItemStack stack) {
-		return stackIsArmorsmithPickup(stack) || stack.is(Items.IRON_INGOT);
+		return stackIsArmorsmithPickup(stack);
+	}
+
+	/**
+	 * Fills partial main/offhand stacks before vanilla pickup tries to replace the main hand.
+	 */
+	public static boolean mergeMatchingStacksIntoHands(PathfinderMob mob, ItemEntity itemEntity) {
+		ItemStack incoming = itemEntity.getItem();
+		if (incoming.isEmpty()) {
+			return false;
+		}
+		for (EquipmentSlot slot : new EquipmentSlot[] { EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND }) {
+			ItemStack held = mob.getItemBySlot(slot);
+			if (held.isEmpty() || !ItemStack.isSameItemSameComponents(held, incoming)) {
+				continue;
+			}
+			int space = held.getMaxStackSize() - held.getCount();
+			if (space <= 0) {
+				continue;
+			}
+			int take = Math.min(space, incoming.getCount());
+			held.grow(take);
+			incoming.shrink(take);
+			mob.setItemSlot(slot, held);
+			itemEntity.setItem(incoming);
+			if (incoming.isEmpty()) {
+				itemEntity.discard();
+				return true;
+			}
+		}
+		return incoming.isEmpty();
 	}
 
 	private boolean isEligibleStack(ItemStack stack) {

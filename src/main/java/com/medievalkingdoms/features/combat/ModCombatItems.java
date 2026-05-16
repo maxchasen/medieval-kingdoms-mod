@@ -3,6 +3,8 @@ package com.medievalkingdoms.features.combat;
 import com.medievalkingdoms.MedievalKingdomsMod;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -24,13 +26,19 @@ public final class ModCombatItems {
 			BuiltInRegistries.ITEM,
 			KNIGHT_SPAWN_EGG_KEY,
 			new SpawnEggItem(
-					new Item.Properties().setId(KNIGHT_SPAWN_EGG_KEY).spawnEgg(ModCombatEntityTypes.KNIGHT)));
+					new Item.Properties()
+							.setId(KNIGHT_SPAWN_EGG_KEY)
+							.spawnEgg(ModCombatEntityTypes.KNIGHT)
+							.component(DataComponents.CUSTOM_NAME, Component.translatable("item.medieval_kingdoms.knight_spawn_egg"))));
 
 	public static final Item ARCHER_SPAWN_EGG = Registry.register(
 			BuiltInRegistries.ITEM,
 			ARCHER_SPAWN_EGG_KEY,
 			new SpawnEggItem(
-					new Item.Properties().setId(ARCHER_SPAWN_EGG_KEY).spawnEgg(ModCombatEntityTypes.ARCHER)));
+					new Item.Properties()
+							.setId(ARCHER_SPAWN_EGG_KEY)
+							.spawnEgg(ModCombatEntityTypes.ARCHER)
+							.component(DataComponents.CUSTOM_NAME, Component.translatable("item.medieval_kingdoms.archer_spawn_egg"))));
 
 	private ModCombatItems() {
 	}

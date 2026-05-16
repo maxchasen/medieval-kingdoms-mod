@@ -65,12 +65,22 @@ public final class KingdomWorldData extends SavedData {
 	}
 
 	public static KingdomWorldData get(ServerLevel level) {
+		if (level == null) {
+			throw new IllegalStateException("Cannot load KingdomWorldData: ServerLevel is null");
+		}
 		ServerLevel overworld = level.getServer().getLevel(Level.OVERWORLD);
+		if (overworld == null) {
+			throw new IllegalStateException("Cannot load KingdomWorldData: overworld not loaded yet");
+		}
 		return overworld.getDataStorage().computeIfAbsent(TYPE);
 	}
 
 	public static KingdomWorldData get(MinecraftServer server) {
-		return get(server.getLevel(Level.OVERWORLD));
+		ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+		if (overworld == null) {
+			throw new IllegalStateException("Cannot load KingdomWorldData: overworld not loaded yet");
+		}
+		return get(overworld);
 	}
 
 	/** Prime codec + disk path as soon as the server exists (Fabric lifecycle hook). */
@@ -156,6 +166,20 @@ public final class KingdomWorldData extends SavedData {
 		}
 		ea.addAlly(b);
 		eb.addAlly(a);
+		this.setDirty();
+	}
+
+	public void removeBidirectionalAlliance(UUID a, UUID b) {
+		if (a.equals(b)) {
+			return;
+		}
+		KingdomEntry ea = this.kingdoms.get(a);
+		KingdomEntry eb = this.kingdoms.get(b);
+		if (ea == null || eb == null) {
+			return;
+		}
+		ea.removeAlly(b);
+		eb.removeAlly(a);
 		this.setDirty();
 	}
 }

@@ -19,8 +19,8 @@ import java.util.EnumSet;
 public final class MoveTowardsNearestQuarryGoal extends Goal {
 	private static final int MAX_DIST = 64;
 	private static final int MAX_DIST_SQ = MAX_DIST * MAX_DIST;
-	private static final int HORIZONTAL_EXTENT = 24;
-	private static final int VERTICAL_EXTENT = 12;
+	private static final int HORIZONTAL_EXTENT = 48;
+	private static final int VERTICAL_EXTENT = 24;
 	private static final double ARRIVE_EPS = 2.25D;
 
 	private final PathfinderMob mob;

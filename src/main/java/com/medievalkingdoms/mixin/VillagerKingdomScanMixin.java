@@ -1,0 +1,29 @@
+package com.medievalkingdoms.mixin;
+
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.npc.villager.Villager;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.medievalkingdoms.features.faction.VillagerKingdom;
+
+@Mixin(Villager.class)
+public abstract class VillagerKingdomScanMixin {
+	@Inject(method = "tick", at = @At("RETURN"))
+	private void medievalKingdoms$tagNearSigil(CallbackInfo ci) {
+		Villager villager = (Villager) (Object) this;
+		if (villager.level().isClientSide()) {
+			return;
+		}
+		if (!(villager.level() instanceof ServerLevel serverLevel)) {
+			return;
+		}
+		if (villager.tickCount % 40 != 0) {
+			return;
+		}
+		VillagerKingdom.tryTagFromNearbySigil(serverLevel, villager);
+	}
+}

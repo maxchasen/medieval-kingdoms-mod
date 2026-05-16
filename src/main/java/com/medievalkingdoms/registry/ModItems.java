@@ -3,6 +3,8 @@ package com.medievalkingdoms.registry;
 import com.medievalkingdoms.MedievalKingdomsMod;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -20,7 +22,10 @@ public final class ModItems {
 			BuiltInRegistries.ITEM,
 			MINER_SPAWN_EGG_KEY,
 			new SpawnEggItem(
-					new Item.Properties().setId(MINER_SPAWN_EGG_KEY).spawnEgg(ModEntityTypes.MINER)));
+					new Item.Properties()
+							.setId(MINER_SPAWN_EGG_KEY)
+							.spawnEgg(ModEntityTypes.MINER)
+							.component(DataComponents.CUSTOM_NAME, Component.translatable("item.medieval_kingdoms.miner_spawn_egg"))));
 
 	private ModItems() {
 	}

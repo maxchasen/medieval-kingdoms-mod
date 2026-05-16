@@ -1,8 +1,12 @@
 package com.medievalkingdoms.features.realm;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.medievalkingdoms.features.alliance.AllianceOpenUiPayload;
+import com.medievalkingdoms.features.alliance.AllyRow;
+import com.medievalkingdoms.features.alliance.NameKingdomUiPayload;
 import com.medievalkingdoms.features.faction.VillagerKingdom;
 import com.mojang.serialization.MapCodec;
 
@@ -48,9 +52,8 @@ public final class KingdomSigilBlock extends BaseEntityBlock {
 	}
 
 	/**
-	 * Handles alliance table open for the sigil owner when main hand is empty or the player is sneaking.
-	 * Wired from {@link com.medievalkingdoms.features.alliance.AllianceUiFeature} via Fabric {@code UseBlockCallback}
-	 * (1.21.11 splits item vs empty-hand block use; this keeps one server-authoritative path).
+	 * Owning player: first opens kingdom naming, later the alliance table (empty main hand or sneak).
+	 * Wired from {@link com.medievalkingdoms.features.alliance.AllianceUiFeature} via {@code UseBlockCallback}.
 	 */
 	public static InteractionResult allianceTableUse(Level level, BlockPos pos, Player player, InteractionHand hand) {
 		if (hand != InteractionHand.MAIN_HAND) {
@@ -71,12 +74,24 @@ public final class KingdomSigilBlock extends BaseEntityBlock {
 		if (!(level.getBlockEntity(pos) instanceof KingdomSigilBlockEntity sigil)) {
 			return InteractionResult.PASS;
 		}
-		UUID kingdomId = sigil.getKingdomId();
 		UUID owner = sigil.getOwner();
-		if (kingdomId == null || owner == null || !owner.equals(player.getUUID())) {
+		if (owner == null || !owner.equals(player.getUUID())) {
 			return InteractionResult.PASS;
 		}
-		ServerPlayNetworking.send(serverPlayer, new AllianceOpenUiPayload(pos, kingdomId));
+		UUID kingdomId = sigil.getKingdomId();
+		if (kingdomId == null) {
+			ServerPlayNetworking.send(serverPlayer, new NameKingdomUiPayload(pos));
+			return InteractionResult.SUCCESS;
+		}
+		ServerLevel serverLevel = (ServerLevel) level;
+		KingdomWorldData data = KingdomWorldData.get(serverLevel);
+		List<AllyRow> allies = new ArrayList<>();
+		data.getKingdom(kingdomId).ifPresent(entry -> {
+			for (UUID allyId : entry.alliedKingdomIds()) {
+				data.getKingdom(allyId).ifPresent(a -> allies.add(new AllyRow(allyId, a.internalName())));
+			}
+		});
+		ServerPlayNetworking.send(serverPlayer, new AllianceOpenUiPayload(pos, kingdomId, allies));
 		return InteractionResult.SUCCESS;
 	}
 
@@ -98,7 +113,7 @@ public final class KingdomSigilBlock extends BaseEntityBlock {
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		super.setPlacedBy(level, pos, state, placer, stack);
-		if (level.isClientSide() || !(level instanceof ServerLevel serverLevel)) {
+		if (level.isClientSide() || !(level instanceof ServerLevel)) {
 			return;
 		}
 		if (!(placer instanceof ServerPlayer player)) {
@@ -107,21 +122,7 @@ public final class KingdomSigilBlock extends BaseEntityBlock {
 		if (!(level.getBlockEntity(pos) instanceof KingdomSigilBlockEntity sigil)) {
 			return;
 		}
-		String hover = stack.getHoverName().getString().trim();
-		if (hover.isEmpty()) {
-			hover = "Unnamed";
-		}
-		if (hover.length() > 24) {
-			hover = hover.substring(0, 24);
-		}
-		UUID kingdomId = KingdomWorldData.get(serverLevel).createKingdom(hover, player.getUUID());
-		sigil.setKingdomData(kingdomId, hover, player.getUUID());
-		VillagerKingdom.assignToKingdom(
-				serverLevel,
-				pos,
-				kingdomId,
-				VillagerKingdom.DEFAULT_HORIZONTAL_RADIUS,
-				VillagerKingdom.DEFAULT_VERTICAL_RADIUS);
+		sigil.setPlacedPendingName(player.getUUID());
 	}
 
 	@Override
@@ -147,6 +148,9 @@ public final class KingdomSigilBlock extends BaseEntityBlock {
 			return;
 		}
 		UUID kingdomId = sigil.getKingdomId();
+		if (kingdomId == null) {
+			return;
+		}
 		KingdomWorldData.get(serverLevel).removeKingdom(kingdomId);
 		VillagerKingdom.clearTaggedInVolume(
 				serverLevel,

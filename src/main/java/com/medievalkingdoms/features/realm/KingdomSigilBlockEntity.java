@@ -30,6 +30,14 @@ public final class KingdomSigilBlockEntity extends BlockEntity {
 		this.setChanged();
 	}
 
+	/** Called when the sigil is placed: kingdom id is assigned after the owner names it via UI. */
+	public void setPlacedPendingName(@Nullable UUID owner) {
+		this.kingdomId = null;
+		this.kingdomName = "";
+		this.owner = owner;
+		this.setChanged();
+	}
+
 	@Nullable
 	public UUID getKingdomId() {
 		return this.kingdomId;

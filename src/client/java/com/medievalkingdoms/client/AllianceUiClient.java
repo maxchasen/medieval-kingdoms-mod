@@ -1,8 +1,10 @@
 package com.medievalkingdoms.client;
 
 import com.medievalkingdoms.client.alliance.AllianceTableScreen;
+import com.medievalkingdoms.client.alliance.NameKingdomScreen;
 import com.medievalkingdoms.features.alliance.AllianceNotificationPayload;
 import com.medievalkingdoms.features.alliance.AllianceOpenUiPayload;
+import com.medievalkingdoms.features.alliance.NameKingdomUiPayload;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -24,7 +26,11 @@ public final class AllianceUiClient implements ClientModInitializer {
 					Component.translatable(payload.messageKey(), payload.kingdomName()));
 		});
 		ClientPlayNetworking.registerGlobalReceiver(AllianceOpenUiPayload.TYPE, (payload, context) -> {
-			context.client().execute(() -> Minecraft.getInstance().setScreen(new AllianceTableScreen(payload.kingdomId())));
+			context.client().execute(() -> Minecraft.getInstance()
+					.setScreen(new AllianceTableScreen(payload.kingdomId(), payload.allies())));
+		});
+		ClientPlayNetworking.registerGlobalReceiver(NameKingdomUiPayload.TYPE, (payload, context) -> {
+			context.client().execute(() -> Minecraft.getInstance().setScreen(new NameKingdomScreen(payload.sigilPos())));
 		});
 	}
 }

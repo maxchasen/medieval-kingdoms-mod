@@ -8,7 +8,9 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -45,13 +47,17 @@ public final class RealmFeature implements ModInitializer {
 				KINGDOM_SIGIL_ITEM_KEY,
 				new BlockItem(
 						KINGDOM_SIGIL_BLOCK,
-						new Item.Properties().setId(KINGDOM_SIGIL_ITEM_KEY).useBlockDescriptionPrefix()));
+						new Item.Properties()
+								.setId(KINGDOM_SIGIL_ITEM_KEY)
+								.useBlockDescriptionPrefix()
+								.component(DataComponents.CUSTOM_NAME, Component.translatable("item.medieval_kingdoms.kingdom_sigil"))));
 		KINGDOM_SIGIL_BE_TYPE = Registry.register(
 				BuiltInRegistries.BLOCK_ENTITY_TYPE,
 				KINGDOM_SIGIL_BE_KEY,
 				FabricBlockEntityTypeBuilder.create(KingdomSigilBlockEntity::new, KINGDOM_SIGIL_BLOCK).build());
 
-		ServerLifecycleEvents.SERVER_STARTING.register(KingdomWorldData::ensureLoaded);
+		// Overworld is not guaranteed during SERVER_STARTING; priming must run after dimensions load.
+		ServerLifecycleEvents.SERVER_STARTED.register(KingdomWorldData::ensureLoaded);
 
 		ItemGroupEvents.modifyEntriesEvent(
 						ResourceKey.create(Registries.CREATIVE_MODE_TAB, Identifier.withDefaultNamespace("building_blocks")))

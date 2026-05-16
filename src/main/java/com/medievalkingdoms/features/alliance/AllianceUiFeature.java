@@ -11,6 +11,7 @@ public final class AllianceUiFeature implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		PayloadTypeRegistry.playS2C().register(AllianceOpenUiPayload.TYPE, AllianceOpenUiPayload.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(NameKingdomUiPayload.TYPE, NameKingdomUiPayload.STREAM_CODEC);
 		UseBlockCallback.EVENT.register(
 				(player, world, hand, hitResult) -> KingdomSigilBlock.allianceTableUse(world, hitResult.getBlockPos(), player, hand));
 	}

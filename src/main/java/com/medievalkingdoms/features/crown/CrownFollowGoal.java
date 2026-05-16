@@ -1,9 +1,12 @@
 package com.medievalkingdoms.features.crown;
 
+import com.medievalkingdoms.features.faction.MedievalKingdomsMobTags;
 import com.medievalkingdoms.features.realm.KingdomWorldData;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -69,7 +72,7 @@ public final class CrownFollowGoal extends Goal {
 		if (!wearsWarlordCrown(this.followTarget)) {
 			return false;
 		}
-		if (!KingdomWorldData.get(sl).isKingdomOwner(this.followTarget.getUUID())) {
+		if (!isWarlordForThisMob(this.followTarget, sl)) {
 			return false;
 		}
 		return this.mob.distanceToSqr(this.followTarget) > STOP_NEAR_SQ;
@@ -104,7 +107,6 @@ public final class CrownFollowGoal extends Goal {
 		List<Player> candidates = level.getEntitiesOfClass(Player.class, box, p -> true);
 		ServerPlayer best = null;
 		double bestDist = MAX_RANGE_SQ;
-		KingdomWorldData data = KingdomWorldData.get(level);
 		for (Player p : candidates) {
 			if (!(p instanceof ServerPlayer sp) || !sp.isAlive()) {
 				continue;
@@ -112,7 +114,7 @@ public final class CrownFollowGoal extends Goal {
 			if (!wearsWarlordCrown(sp)) {
 				continue;
 			}
-			if (!data.isKingdomOwner(sp.getUUID())) {
+			if (!isWarlordForThisMob(sp, level)) {
 				continue;
 			}
 			double d = this.mob.distanceToSqr(sp);
@@ -122,6 +124,17 @@ public final class CrownFollowGoal extends Goal {
 			}
 		}
 		return best;
+	}
+
+	private boolean isWarlordForThisMob(ServerPlayer player, ServerLevel level) {
+		KingdomWorldData data = KingdomWorldData.get(level);
+		Optional<UUID> mobKingdom = MedievalKingdomsMobTags.readKingdomId(this.mob);
+		if (mobKingdom.isEmpty()) {
+			return data.isKingdomOwner(player.getUUID());
+		}
+		return data.getKingdom(mobKingdom.get())
+				.map(e -> player.getUUID().equals(e.owner()))
+				.orElse(false);
 	}
 
 	private static boolean wearsWarlordCrown(ServerPlayer player) {

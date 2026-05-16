@@ -20,5 +20,9 @@
   "medieval_kingdoms.alliance.request_received": "Kingdom %s proposes an alliance.",
   "medieval_kingdoms.alliance.ui.title": "Alliance Table",
   "medieval_kingdoms.alliance.ui.send_request": "Send request",
-  "medieval_kingdoms.alliance.ui.target_hint": "Target kingdom name"
+  "medieval_kingdoms.alliance.ui.target_hint": "Target kingdom name",
+  "medieval_kingdoms.alliance.ui.break_with": "Break alliance with %s",
+  "medieval_kingdoms.kingdom.name.title": "Kingdom Name",
+  "medieval_kingdoms.kingdom.name.hint": "Name your realm",
+  "medieval_kingdoms.kingdom.name.confirm": "Confirm"
 }
