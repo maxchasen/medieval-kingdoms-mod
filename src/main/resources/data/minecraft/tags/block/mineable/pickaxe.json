@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "medieval_kingdoms:quarry"
+    "medieval_kingdoms:quarry",
+    "medieval_kingdoms:kingdom_sigil"
   ]
 }

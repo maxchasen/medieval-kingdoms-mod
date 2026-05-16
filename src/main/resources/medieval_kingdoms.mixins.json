@@ -3,7 +3,8 @@
 	"package": "com.medievalkingdoms.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"MedievalKingdomsMixin"
+		"MedievalKingdomsMixin",
+		"VillagerBabySpawnMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

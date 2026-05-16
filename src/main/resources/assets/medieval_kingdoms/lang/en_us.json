@@ -2,5 +2,10 @@
   "block.medieval_kingdoms.quarry": "Quarry",
   "item.medieval_kingdoms.quarry": "Quarry",
   "entity.medieval_kingdoms.miner": "Miner",
-  "item.medieval_kingdoms.miner_spawn_egg": "Miner Spawn Egg"
+  "item.medieval_kingdoms.miner_spawn_egg": "Miner Spawn Egg",
+  "entity.medieval_kingdoms.knight": "Knight",
+  "item.medieval_kingdoms.knight_spawn_egg": "Knight Spawn Egg",
+  "item.medieval_kingdoms.crown": "Warlord's Crown",
+  "block.medieval_kingdoms.kingdom_sigil": "Kingdom Sigil",
+  "item.medieval_kingdoms.kingdom_sigil": "Kingdom Sigil"
 }

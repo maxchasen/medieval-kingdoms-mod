@@ -15,10 +15,16 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.medievalkingdoms.MedievalKingdomsMod"
+			"com.medievalkingdoms.MedievalKingdomsMod",
+			"com.medievalkingdoms.features.miner.MinerJobsFeature",
+			"com.medievalkingdoms.features.realm.RealmFeature",
+			"com.medievalkingdoms.features.crown.CrownFeature",
+			"com.medievalkingdoms.features.combat.CombatVillagersFeature",
+			"com.medievalkingdoms.features.village.VillageRolesFeature"
 		],
 		"client": [
-			"com.medievalkingdoms.client.MedievalKingdomsModClient"
+			"com.medievalkingdoms.client.MedievalKingdomsModClient",
+			"com.medievalkingdoms.client.CombatEntityClient"
 		]
 	},
 	"mixins": [

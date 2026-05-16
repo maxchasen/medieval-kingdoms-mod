@@ -1,5 +1,6 @@
 package com.medievalkingdoms.entity;
 
+import com.medievalkingdoms.entity.ai.MinerExcavationGoal;
 import com.medievalkingdoms.entity.ai.MoveTowardsNearestQuarryGoal;
 
 import net.minecraft.world.entity.EntityType;
@@ -28,6 +29,7 @@ public class MinerEntity extends PathfinderMob {
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new FloatGoal(this));
 		this.goalSelector.addGoal(2, new MoveTowardsNearestQuarryGoal(this, 1.0D));
+		this.goalSelector.addGoal(3, new MinerExcavationGoal(this));
 		this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.6D));
 		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
 	}
