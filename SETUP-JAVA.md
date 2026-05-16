@@ -36,9 +36,17 @@ export PATH="$JAVA_HOME/bin:$PATH"
 export JAVA_HOME="$(/usr/libexec/java_home -v 21)"
 ```
 
-## Pin Gradle’s daemon (optional but recommended)
+## Pin Gradle’s daemon (optional)
 
-This repo sets **`org.gradle.java.home`** in `gradle.properties` to the Apple Silicon Homebrew path above. If you use **Intel Homebrew** or **Temurin**, edit that line to your real JDK path so Gradle daemons always use 21.
+**Do not commit** `org.gradle.java.home` in the repo’s `gradle.properties` — that path is machine-specific and breaks **GitHub Actions** on Linux.
+
+Instead, add one line to **`~/.gradle/gradle.properties`** (create the file if needed), using your real JDK 21 path, e.g. Homebrew Apple Silicon:
+
+```properties
+org.gradle.java.home=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
+```
+
+Intel Homebrew: `/usr/local/opt/openjdk@21/...`; Temurin: use `/usr/libexec/java_home -v 21` and paste the path.
 
 ## Run the dev client
 
