@@ -13,7 +13,9 @@ Fabric mod for Minecraft **1.21.11** (Mojang mappings, Java 21). See the project
 
 ## Setup
 
-Follow the [Fabric documentation](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) for your IDE (Cursor / VS Code Extension Pack for Java, or IntelliJ).
+If `./gradlew --version` fails with no Java runtime, install **JDK 21** first — see [SETUP-JAVA.md](SETUP-JAVA.md).
+
+Then follow the [Fabric documentation](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) for your IDE (Cursor / VS Code Extension Pack for Java, or IntelliJ).
 
 ## License
 
