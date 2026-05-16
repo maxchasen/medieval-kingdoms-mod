@@ -8,7 +8,6 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
@@ -59,7 +58,7 @@ public final class MoveTowardsNearestQuarryGoal extends Goal {
 		if (this.mob.blockPosition().distSqr(this.quarryPos) <= ARRIVE_EPS) {
 			return false;
 		}
-		return this.mob.getNavigation().isInProgress();
+		return true;
 	}
 
 	@Override
@@ -112,9 +111,6 @@ public final class MoveTowardsNearestQuarryGoal extends Goal {
 				continue;
 			}
 			if (!level.getBlockState(pos).is(ModBlocks.QUARRY_BLOCK)) {
-				continue;
-			}
-			if (!level.getBlockState(pos.below()).isPathfindable(PathComputationType.LAND)) {
 				continue;
 			}
 			if (d2 < bestDistSq) {

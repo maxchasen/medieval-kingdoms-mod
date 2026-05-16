@@ -21,7 +21,7 @@ import net.minecraft.world.phys.Vec3;
  * <p>TODO: bow crafting / fletching table workflow (v1 only spawns arrow drops).
  */
 public final class FletcherVillagerEntity extends PathfinderMob {
-	private static final int ARROW_PRODUCTION_INTERVAL_TICKS = 6000;
+	private static final int ARROW_PRODUCTION_INTERVAL_TICKS = 120;
 
 	private int arrowProductionTicks;
 

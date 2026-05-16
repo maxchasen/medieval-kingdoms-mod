@@ -107,10 +107,12 @@ public final class KingdomWorldData extends SavedData {
 
 	/**
 	 * Creates a kingdom with a new id. Display/internal name is already normalized by the caller.
+	 *
+	 * @param labelColor ARGB swatch from {@link KingdomSigilPalette}.
 	 */
-	public UUID createKingdom(String internalName, UUID owner) {
+	public UUID createKingdom(String internalName, UUID owner, int labelColor) {
 		UUID id = UUID.randomUUID();
-		this.kingdoms.put(id, new KingdomEntry(internalName, owner));
+		this.kingdoms.put(id, new KingdomEntry(internalName, owner, KingdomSigilPalette.sanitize(labelColor)));
 		this.setDirty();
 		return id;
 	}

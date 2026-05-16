@@ -4,8 +4,10 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.medievalkingdoms.entity.MinerEntity;
 import com.medievalkingdoms.features.combat.entity.ArcherEntity;
 import com.medievalkingdoms.features.combat.entity.KnightEntity;
+import com.medievalkingdoms.features.faction.KingdomMobLabels;
 import com.medievalkingdoms.features.faction.MedievalKingdomsMobTags;
 import com.medievalkingdoms.features.realm.KingdomSigilBlockEntity;
 
@@ -31,15 +33,21 @@ public final class CombatKingdomTagFeature implements ModInitializer {
 	}
 
 	private static void handleEntityLoaded(Entity entity, ServerLevel world) {
-		if (!(entity instanceof KnightEntity) && !(entity instanceof ArcherEntity)) {
+		if (!(entity instanceof KnightEntity) && !(entity instanceof ArcherEntity) && !(entity instanceof MinerEntity)) {
 			return;
 		}
-		if (MedievalKingdomsMobTags.readKingdomId(entity).isPresent()) {
-			return;
+		if (MedievalKingdomsMobTags.readKingdomId(entity).isEmpty()) {
+			@Nullable UUID nearestKingdomId = nearestSigilKingdomId(entity, world);
+			if (nearestKingdomId != null) {
+				MedievalKingdomsMobTags.writeKingdomId(entity, nearestKingdomId);
+			}
 		}
-		@Nullable UUID nearestKingdomId = nearestSigilKingdomId(entity, world);
-		if (nearestKingdomId != null) {
-			MedievalKingdomsMobTags.writeKingdomId(entity, nearestKingdomId);
+		if (entity instanceof KnightEntity knight) {
+			KingdomMobLabels.applyRoleName(knight, world, "Knight");
+		} else if (entity instanceof ArcherEntity archer) {
+			KingdomMobLabels.applyRoleName(archer, world, "Archer");
+		} else if (entity instanceof MinerEntity miner) {
+			KingdomMobLabels.applyRoleName(miner, world, "Miner");
 		}
 	}
 

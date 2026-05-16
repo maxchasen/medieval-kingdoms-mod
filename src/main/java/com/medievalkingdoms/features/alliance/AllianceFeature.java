@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.medievalkingdoms.features.realm.KingdomEntry;
 import com.medievalkingdoms.features.realm.KingdomSigilBlockEntity;
+import com.medievalkingdoms.features.realm.KingdomSigilPalette;
 import com.medievalkingdoms.features.realm.KingdomWorldData;
 import com.medievalkingdoms.features.faction.VillagerKingdom;
 
@@ -76,7 +77,7 @@ public final class AllianceFeature implements ModInitializer {
 			if (name.length() > 24) {
 				name = name.substring(0, 24);
 			}
-			UUID kingdomId = KingdomWorldData.get(level).createKingdom(name, player.getUUID());
+			UUID kingdomId = KingdomWorldData.get(level).createKingdom(name, player.getUUID(), KingdomSigilPalette.sanitize(payload.labelColorArgb()));
 			sigil.setKingdomData(kingdomId, name, player.getUUID());
 			VillagerKingdom.assignToKingdom(
 					level,

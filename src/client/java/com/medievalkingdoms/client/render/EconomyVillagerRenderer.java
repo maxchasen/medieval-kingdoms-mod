@@ -4,12 +4,21 @@ import net.minecraft.client.model.npc.VillagerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.VillagerRenderer;
+import net.minecraft.client.renderer.entity.layers.CrossedArmsItemLayer;
+import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
+import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.renderer.entity.state.HoldingEntityRenderState;
 import net.minecraft.client.renderer.entity.state.VillagerRenderState;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 
 /**
- * Renders economy-role mobs with the villager model/skin instead of the shared zombie placeholder.
+ * Renders combat / job mobs with the villager model, including held items and headwear
+ * (vanilla villagers use crossed-arms item + custom head layers instead of humanoid armor).
  */
 public final class EconomyVillagerRenderer extends MobRenderer<PathfinderMob, VillagerRenderState, VillagerModel> {
 	private static final Identifier VILLAGER_SKIN =
@@ -17,6 +26,10 @@ public final class EconomyVillagerRenderer extends MobRenderer<PathfinderMob, Vi
 
 	public EconomyVillagerRenderer(EntityRendererProvider.Context context) {
 		super(context, new VillagerModel(context.bakeLayer(ModelLayers.VILLAGER)), 0.5F);
+		this.addLayer(
+				new CustomHeadLayer<>(
+						this, context.getModelSet(), context.getPlayerSkinRenderCache(), VillagerRenderer.CUSTOM_HEAD_TRANSFORMS));
+		this.addLayer(new CrossedArmsItemLayer<>(this));
 	}
 
 	@Override
@@ -27,6 +40,13 @@ public final class EconomyVillagerRenderer extends MobRenderer<PathfinderMob, Vi
 	@Override
 	public void extractRenderState(PathfinderMob entity, VillagerRenderState state, float tickCount) {
 		super.extractRenderState(entity, state, tickCount);
+		HoldingEntityRenderState.extractHoldingEntityRenderState(entity, state, this.itemModelResolver);
+		ItemStack head = entity.getItemBySlot(EquipmentSlot.HEAD);
+		if (!head.isEmpty() && HumanoidArmorLayer.shouldRender(head, EquipmentSlot.HEAD)) {
+			this.itemModelResolver.updateForLiving(state.headItem, head, ItemDisplayContext.HEAD, entity);
+		}
+		state.isUnhappy = false;
+		state.villagerData = null;
 	}
 
 	@Override

@@ -108,6 +108,9 @@ public final class VillagerKingdom {
 			return;
 		}
 		MedievalKingdomsMobTags.writeKingdomId(villager, kingdomId);
+		if (villager.level() instanceof ServerLevel serverLevel) {
+			KingdomMobLabels.applyRoleName(villager, serverLevel, "Villager");
+		}
 	}
 
 	public static void clearTaggedInVolume(ServerLevel level, BlockPos sigilPos, UUID kingdomId, int horizontalRadius, int verticalRadius) {

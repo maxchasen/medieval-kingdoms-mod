@@ -3,8 +3,6 @@ package com.medievalkingdoms.features.economy;
 import com.medievalkingdoms.MedievalKingdomsMod;
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -22,10 +20,7 @@ public final class ModEconomyItems {
 			BuiltInRegistries.ITEM,
 			ARMORSMITH_SPAWN_EGG_KEY,
 			new SpawnEggItem(
-					new Item.Properties()
-							.setId(ARMORSMITH_SPAWN_EGG_KEY)
-							.spawnEgg(ModEconomyEntityTypes.ARMORSMITH_VILLAGER)
-							.component(DataComponents.CUSTOM_NAME, Component.translatable("item.medieval_kingdoms.armorsmith_spawn_egg"))));
+					new Item.Properties().setId(ARMORSMITH_SPAWN_EGG_KEY).spawnEgg(ModEconomyEntityTypes.ARMORSMITH_VILLAGER)));
 
 	public static final ResourceKey<Item> WEAPONSMITH_SPAWN_EGG_KEY = ResourceKey.create(
 			Registries.ITEM,
@@ -35,10 +30,7 @@ public final class ModEconomyItems {
 			BuiltInRegistries.ITEM,
 			WEAPONSMITH_SPAWN_EGG_KEY,
 			new SpawnEggItem(
-					new Item.Properties()
-							.setId(WEAPONSMITH_SPAWN_EGG_KEY)
-							.spawnEgg(ModEconomyEntityTypes.WEAPONSMITH_VILLAGER)
-							.component(DataComponents.CUSTOM_NAME, Component.translatable("item.medieval_kingdoms.weaponsmith_spawn_egg"))));
+					new Item.Properties().setId(WEAPONSMITH_SPAWN_EGG_KEY).spawnEgg(ModEconomyEntityTypes.WEAPONSMITH_VILLAGER)));
 
 	public static final ResourceKey<Item> FLETCHER_SPAWN_EGG_KEY = ResourceKey.create(
 			Registries.ITEM,
@@ -48,10 +40,7 @@ public final class ModEconomyItems {
 			BuiltInRegistries.ITEM,
 			FLETCHER_SPAWN_EGG_KEY,
 			new SpawnEggItem(
-					new Item.Properties()
-							.setId(FLETCHER_SPAWN_EGG_KEY)
-							.spawnEgg(ModEconomyEntityTypes.FLETCHER_VILLAGER)
-							.component(DataComponents.CUSTOM_NAME, Component.translatable("item.medieval_kingdoms.fletcher_spawn_egg"))));
+					new Item.Properties().setId(FLETCHER_SPAWN_EGG_KEY).spawnEgg(ModEconomyEntityTypes.FLETCHER_VILLAGER)));
 
 	private ModEconomyItems() {
 	}

@@ -8,8 +8,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-/** C2S: finalize kingdom name for an unnamed sigil (owner only). */
-public record SubmitKingdomNamePayload(BlockPos sigilPos, String kingdomName) implements CustomPacketPayload {
+/** C2S: finalize kingdom name + banner color for an unnamed sigil (owner only). */
+public record SubmitKingdomNamePayload(BlockPos sigilPos, String kingdomName, int labelColorArgb) implements CustomPacketPayload {
 	public static final CustomPacketPayload.Type<SubmitKingdomNamePayload> TYPE =
 			new CustomPacketPayload.Type<>(MedievalKingdomsMod.id("submit_kingdom_name"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, SubmitKingdomNamePayload> STREAM_CODEC =
@@ -18,6 +18,8 @@ public record SubmitKingdomNamePayload(BlockPos sigilPos, String kingdomName) im
 					SubmitKingdomNamePayload::sigilPos,
 					ByteBufCodecs.STRING_UTF8,
 					SubmitKingdomNamePayload::kingdomName,
+					ByteBufCodecs.INT,
+					SubmitKingdomNamePayload::labelColorArgb,
 					SubmitKingdomNamePayload::new);
 
 	@Override
