@@ -1,6 +1,8 @@
 package com.medievalkingdoms;
 
 import com.medievalkingdoms.registry.ModBlocks;
+import com.medievalkingdoms.registry.ModEntityTypes;
+import com.medievalkingdoms.registry.ModItems;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
@@ -20,6 +22,8 @@ public class MedievalKingdomsMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModBlocks.register();
+		ModEntityTypes.register();
+		ModItems.register();
 		LOGGER.info("Medieval Kingdoms (Fabric) initialized.");
 	}
 }

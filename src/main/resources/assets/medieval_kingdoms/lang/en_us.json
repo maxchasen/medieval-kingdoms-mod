@@ -1,4 +1,6 @@
 {
   "block.medieval_kingdoms.quarry": "Quarry",
-  "item.medieval_kingdoms.quarry": "Quarry"
+  "item.medieval_kingdoms.quarry": "Quarry",
+  "entity.medieval_kingdoms.miner": "Miner",
+  "item.medieval_kingdoms.miner_spawn_egg": "Miner Spawn Egg"
 }
