@@ -18,8 +18,15 @@ public final class ModBlocks {
 	public static final ResourceKey<Block> QUARRY_BLOCK_KEY = ResourceKey.create(Registries.BLOCK, MedievalKingdomsMod.id("quarry"));
 	public static final ResourceKey<Item> QUARRY_ITEM_KEY = ResourceKey.create(Registries.ITEM, MedievalKingdomsMod.id("quarry"));
 
-	public static final Block QUARRY_BLOCK = registerBlock(QUARRY_BLOCK_KEY, new QuarryBlock(QuarryBlock.createProperties()));
-	public static final Item QUARRY_ITEM = registerItem(QUARRY_ITEM_KEY, new BlockItem(QUARRY_BLOCK, new Item.Properties()));
+	// 1.21+: BlockBehaviour.Properties must have setId(ResourceKey) before the Block constructor runs.
+	public static final Block QUARRY_BLOCK = registerBlock(
+			QUARRY_BLOCK_KEY,
+			new QuarryBlock(QuarryBlock.createProperties().setId(QUARRY_BLOCK_KEY)));
+	public static final Item QUARRY_ITEM = registerItem(
+			QUARRY_ITEM_KEY,
+			new BlockItem(
+					QUARRY_BLOCK,
+					new Item.Properties().setId(QUARRY_ITEM_KEY).useBlockDescriptionPrefix()));
 
 	private ModBlocks() {
 	}
