@@ -1,31 +1,30 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "medieval_kingdoms",
 	"version": "${version}",
-	"name": "Example Mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Medieval Kingdoms",
+	"description": "Living medieval villages: kingdoms, villager roles, and alliances (Fabric 1.21.11).",
 	"authors": [
-		"Me!"
+		"Max"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://fabricmc.net/"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"icon": "assets/medieval_kingdoms/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"com.medievalkingdoms.MedievalKingdomsMod"
 		],
 		"client": [
-			"com.example.client.ExampleModClient"
+			"com.medievalkingdoms.client.MedievalKingdomsModClient"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json",
+		"medieval_kingdoms.mixins.json",
 		{
-			"config": "modid.client.mixins.json",
+			"config": "medieval_kingdoms.client.mixins.json",
 			"environment": "client"
 		}
 	],

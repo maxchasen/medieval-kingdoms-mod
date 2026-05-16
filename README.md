@@ -1,9 +1,20 @@
-# Example Mod
+# Medieval Kingdoms
+
+Fabric mod for Minecraft **1.21.11** (Mojang mappings, Java 21). See the project PRD for gameplay scope.
+
+## Toolchain (pinned)
+
+| Property | Value |
+|----------|--------|
+| Minecraft | `1.21.11` |
+| Fabric Loader | `0.19.2` |
+| Fabric API | `0.141.4+1.21.11` |
+| Loom | `1.16-SNAPSHOT` (see [Fabric develop](https://fabricmc.net/develop/)) |
 
 ## Setup
 
-For setup instructions, please see the [Fabric Documentation page](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) related to the IDE that you are using.
+Follow the [Fabric documentation](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) for your IDE (Cursor / VS Code Extension Pack for Java, or IntelliJ).
 
 ## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+Template base is CC0-1.0 (see `LICENSE`).

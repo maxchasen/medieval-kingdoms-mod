@@ -9,5 +9,5 @@ pluginManagement {
 	}
 }
 
-// Should match your modid
-rootProject.name = 'modid'
+// Gradle project name (artifact / IDE); mod id is in fabric.mod.json
+rootProject.name = 'medieval-kingdoms'

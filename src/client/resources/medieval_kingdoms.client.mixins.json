@@ -1,9 +1,9 @@
 {
 	"required": true,
-	"package": "com.example.client.mixin",
+	"package": "com.medievalkingdoms.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin"
+		"MedievalKingdomsClientMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
