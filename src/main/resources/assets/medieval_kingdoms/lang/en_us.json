@@ -5,7 +5,13 @@
   "item.medieval_kingdoms.miner_spawn_egg": "Miner Spawn Egg",
   "entity.medieval_kingdoms.knight": "Knight",
   "item.medieval_kingdoms.knight_spawn_egg": "Knight Spawn Egg",
+  "entity.medieval_kingdoms.armorsmith_villager": "Armorsmith",
+  "item.medieval_kingdoms.armorsmith_spawn_egg": "Armorsmith Spawn Egg",
+  "entity.medieval_kingdoms.archer": "Archer",
+  "item.medieval_kingdoms.archer_spawn_egg": "Archer Spawn Egg",
   "item.medieval_kingdoms.crown": "Warlord's Crown",
   "block.medieval_kingdoms.kingdom_sigil": "Kingdom Sigil",
-  "item.medieval_kingdoms.kingdom_sigil": "Kingdom Sigil"
+  "item.medieval_kingdoms.kingdom_sigil": "Kingdom Sigil",
+  "medieval_kingdoms.alliance.toast.title": "Alliance",
+  "medieval_kingdoms.alliance.request_received": "Kingdom %s proposes an alliance."
 }

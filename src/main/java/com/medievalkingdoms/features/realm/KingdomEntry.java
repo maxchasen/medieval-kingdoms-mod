@@ -48,4 +48,16 @@ public final class KingdomEntry {
 	public Set<UUID> alliedKingdomIds() {
 		return this.alliedKingdomIds;
 	}
+
+	void addAlly(UUID kingdomId) {
+		if (kingdomId != null) {
+			this.alliedKingdomIds.add(kingdomId);
+		}
+	}
+
+	void removeAlly(UUID kingdomId) {
+		if (kingdomId != null) {
+			this.alliedKingdomIds.remove(kingdomId);
+		}
+	}
 }

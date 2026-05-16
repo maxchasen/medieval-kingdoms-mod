@@ -20,11 +20,17 @@
 			"com.medievalkingdoms.features.realm.RealmFeature",
 			"com.medievalkingdoms.features.crown.CrownFeature",
 			"com.medievalkingdoms.features.combat.CombatVillagersFeature",
-			"com.medievalkingdoms.features.village.VillageRolesFeature"
+			"com.medievalkingdoms.features.village.VillageRolesFeature",
+			"com.medievalkingdoms.features.crown.CrownFollowFeature",
+			"com.medievalkingdoms.features.faction.FactionFeature",
+			"com.medievalkingdoms.features.alliance.AllianceFeature",
+			"com.medievalkingdoms.features.economy.EconomyFeature"
 		],
 		"client": [
 			"com.medievalkingdoms.client.MedievalKingdomsModClient",
-			"com.medievalkingdoms.client.CombatEntityClient"
+			"com.medievalkingdoms.client.CombatEntityClient",
+			"com.medievalkingdoms.client.EconomyEntityClient",
+			"com.medievalkingdoms.client.AllianceClient"
 		]
 	},
 	"mixins": [

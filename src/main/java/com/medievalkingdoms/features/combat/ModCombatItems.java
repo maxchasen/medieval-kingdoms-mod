@@ -16,16 +16,29 @@ public final class ModCombatItems {
 			Registries.ITEM,
 			MedievalKingdomsMod.id("knight_spawn_egg"));
 
+	public static final ResourceKey<Item> ARCHER_SPAWN_EGG_KEY = ResourceKey.create(
+			Registries.ITEM,
+			MedievalKingdomsMod.id("archer_spawn_egg"));
+
 	public static final Item KNIGHT_SPAWN_EGG = Registry.register(
 			BuiltInRegistries.ITEM,
 			KNIGHT_SPAWN_EGG_KEY,
 			new SpawnEggItem(
 					new Item.Properties().setId(KNIGHT_SPAWN_EGG_KEY).spawnEgg(ModCombatEntityTypes.KNIGHT)));
 
+	public static final Item ARCHER_SPAWN_EGG = Registry.register(
+			BuiltInRegistries.ITEM,
+			ARCHER_SPAWN_EGG_KEY,
+			new SpawnEggItem(
+					new Item.Properties().setId(ARCHER_SPAWN_EGG_KEY).spawnEgg(ModCombatEntityTypes.ARCHER)));
+
 	private ModCombatItems() {
 	}
 
 	public static void register() {
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.SPAWN_EGGS).register(entries -> entries.accept(KNIGHT_SPAWN_EGG));
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.SPAWN_EGGS).register(entries -> {
+			entries.accept(KNIGHT_SPAWN_EGG);
+			entries.accept(ARCHER_SPAWN_EGG);
+		});
 	}
 }

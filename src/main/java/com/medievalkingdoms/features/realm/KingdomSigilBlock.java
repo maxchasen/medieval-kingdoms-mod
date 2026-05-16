@@ -2,6 +2,7 @@ package com.medievalkingdoms.features.realm;
 
 import java.util.UUID;
 
+import com.medievalkingdoms.features.faction.VillagerKingdom;
 import com.mojang.serialization.MapCodec;
 
 import org.jetbrains.annotations.Nullable;
@@ -77,6 +78,12 @@ public final class KingdomSigilBlock extends BaseEntityBlock {
 		}
 		UUID kingdomId = KingdomWorldData.get(serverLevel).createKingdom(hover, player.getUUID());
 		sigil.setKingdomData(kingdomId, hover, player.getUUID());
+		VillagerKingdom.assignToKingdom(
+				serverLevel,
+				pos,
+				kingdomId,
+				VillagerKingdom.DEFAULT_HORIZONTAL_RADIUS,
+				VillagerKingdom.DEFAULT_VERTICAL_RADIUS);
 	}
 
 	@Override
@@ -93,10 +100,7 @@ public final class KingdomSigilBlock extends BaseEntityBlock {
 		super.destroy(level, pos, state);
 	}
 
-	/**
-	 * Removes the kingdom from overworld data. When villager kingdom tags exist, clear those here —
-	 * currently not implemented (PRD follow-up).
-	 */
+	/** Removes the kingdom from overworld data and clears villager kingdom tags in the sigil volume (best-effort). */
 	private static void dissolveIfOnServer(LevelAccessor level, BlockPos pos) {
 		if (!(level instanceof ServerLevel serverLevel)) {
 			return;
@@ -104,7 +108,13 @@ public final class KingdomSigilBlock extends BaseEntityBlock {
 		if (!(serverLevel.getBlockEntity(pos) instanceof KingdomSigilBlockEntity sigil)) {
 			return;
 		}
-		// TODO: clear villager NBT/data linking them to kingdomId when that tagging lands.
-		KingdomWorldData.get(serverLevel).removeKingdom(sigil.getKingdomId());
+		UUID kingdomId = sigil.getKingdomId();
+		KingdomWorldData.get(serverLevel).removeKingdom(kingdomId);
+		VillagerKingdom.clearTaggedInVolume(
+				serverLevel,
+				pos,
+				kingdomId,
+				VillagerKingdom.DEFAULT_HORIZONTAL_RADIUS,
+				VillagerKingdom.DEFAULT_VERTICAL_RADIUS);
 	}
 }

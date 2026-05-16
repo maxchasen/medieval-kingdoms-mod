@@ -11,5 +11,6 @@ public final class CombatEntityClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		EntityRenderers.register(ModCombatEntityTypes.KNIGHT, MinerHumanoidRenderer::new);
+		EntityRenderers.register(ModCombatEntityTypes.ARCHER, MinerHumanoidRenderer::new);
 	}
 }
