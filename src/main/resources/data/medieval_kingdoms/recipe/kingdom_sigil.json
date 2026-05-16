@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "B",
+    "L",
+    "E"
+  ],
+  "key": {
+    "B": "minecraft:white_banner",
+    "L": "minecraft:bell",
+    "E": "minecraft:emerald"
+  },
+  "result": {
+    "id": "medieval_kingdoms:kingdom_sigil",
+    "count": 1
+  }
+}

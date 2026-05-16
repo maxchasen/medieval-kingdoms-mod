@@ -1,7 +1,8 @@
 {
   "variants": {
-    "": {
-      "model": "medieval_kingdoms:block/kingdom_sigil"
-    }
+    "facing=north": { "model": "medieval_kingdoms:block/kingdom_sigil", "y": 180 },
+    "facing=south": { "model": "medieval_kingdoms:block/kingdom_sigil" },
+    "facing=west": { "model": "medieval_kingdoms:block/kingdom_sigil", "y": 90 },
+    "facing=east": { "model": "medieval_kingdoms:block/kingdom_sigil", "y": 270 }
   }
 }

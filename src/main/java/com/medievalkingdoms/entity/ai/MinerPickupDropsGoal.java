@@ -40,7 +40,9 @@ public final class MinerPickupDropsGoal extends Goal {
 
 	@Override
 	public boolean canUse() {
-		if (this.miner.level().isClientSide() || !this.miner.isNearQuarryWorkSite()) {
+		if (this.miner.level().isClientSide()
+				|| !MinerSchedule.isDay(this.miner.level())
+				|| !this.miner.isNearQuarryWorkSite()) {
 			return false;
 		}
 		this.targetItem = findNearestDrop();

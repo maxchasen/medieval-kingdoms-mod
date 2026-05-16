@@ -1,10 +1,11 @@
 package com.medievalkingdoms.features.miner;
 
+import com.medievalkingdoms.entity.MinerEntity;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.Block;
@@ -28,31 +29,66 @@ public final class MinerLogistics {
 	private static final int STORAGE_SEARCH_RADIUS = 12;
 	private static final double STORAGE_SEARCH_RADIUS_SQ = STORAGE_SEARCH_RADIUS * STORAGE_SEARCH_RADIUS;
 
-	public static void tryHarvestIntoNearbyStorage(ServerLevel level, Entity miner, BlockPos breakPos, BlockState blockState) {
+	public static void harvestBlockForMiner(ServerLevel level, MinerEntity miner, BlockPos breakPos, BlockState blockState) {
 		BlockEntity brokenEntity = level.getBlockEntity(breakPos);
-		ItemStack tool = miner instanceof LivingEntity living ? living.getMainHandItem() : ItemStack.EMPTY;
-		StorageTarget storage = findNearestChestOrBarrel(level, miner.position());
-		if (storage == null) {
-			level.destroyBlock(breakPos, true, miner);
-			return;
-		}
-
+		ItemStack tool = miner.getMainHandItem();
 		List<ItemStack> drops = Block.getDrops(blockState, level, breakPos, brokenEntity, miner, tool);
 		if (!level.destroyBlock(breakPos, false, miner)) {
 			return;
 		}
-
 		for (ItemStack stack : drops) {
-			ItemStack leftover = mergeInto(storage.container(), stack);
-			if (!leftover.isEmpty()) {
-				Block.popResource(level, breakPos, leftover);
+			giveStackToMiner(miner, stack);
+		}
+	}
+
+	private static void giveStackToMiner(MinerEntity miner, ItemStack incoming) {
+		if (incoming.isEmpty()) {
+			return;
+		}
+		ItemStack offhand = miner.getItemBySlot(EquipmentSlot.OFFHAND);
+		if (offhand.isEmpty()) {
+			miner.setItemSlot(EquipmentSlot.OFFHAND, incoming);
+			return;
+		}
+		if (ItemStack.isSameItemSameComponents(offhand, incoming)) {
+			int space = offhand.getMaxStackSize() - offhand.getCount();
+			if (space > 0) {
+				int moved = Math.min(space, incoming.getCount());
+				offhand.grow(moved);
+				incoming.shrink(moved);
+				miner.setItemSlot(EquipmentSlot.OFFHAND, offhand);
+				if (incoming.isEmpty()) {
+					return;
+				}
 			}
 		}
-
-		markStorageDirty(level, storage.pos(), storage.state());
+		Block.popResource(miner.level(), miner.blockPosition(), incoming);
 	}
 
 	private record StorageTarget(BlockPos pos, BlockState state, Container container) {}
+
+	public static @Nullable BlockPos findNearestStoragePos(ServerLevel level, Vec3 minerPos) {
+		StorageTarget target = findNearestChestOrBarrel(level, minerPos);
+		return target == null ? null : target.pos();
+	}
+
+	public static boolean minerHasDepositItems(MinerEntity miner) {
+		ItemStack offhand = miner.getItemBySlot(EquipmentSlot.OFFHAND);
+		return !offhand.isEmpty();
+	}
+
+	public static void depositMinerItems(ServerLevel level, MinerEntity miner) {
+		StorageTarget storage = findNearestChestOrBarrel(level, miner.position());
+		if (storage == null) {
+			return;
+		}
+		ItemStack offhand = miner.getItemBySlot(EquipmentSlot.OFFHAND);
+		if (!offhand.isEmpty()) {
+			ItemStack leftover = mergeInto(storage.container(), offhand);
+			miner.setItemSlot(EquipmentSlot.OFFHAND, leftover);
+		}
+		markStorageDirty(level, storage.pos(), storage.state());
+	}
 
 	private static @Nullable StorageTarget findNearestChestOrBarrel(ServerLevel level, Vec3 minerPos) {
 		BlockPos feet = BlockPos.containing(minerPos);

@@ -24,31 +24,50 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.core.Direction;
 
 /**
  * Placed by players to found a kingdom; breaks with very high resistance (PRD §6).
  */
 public final class KingdomSigilBlock extends BaseEntityBlock {
 	public static final MapCodec<KingdomSigilBlock> CODEC = simpleCodec(KingdomSigilBlock::new);
+	public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
 	public KingdomSigilBlock(BlockBehaviour.Properties settings) {
 		super(settings);
+		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, net.minecraft.core.Direction.NORTH));
 	}
 
 	public static BlockBehaviour.Properties createProperties() {
-		// ~5x obsidian-adjacent feel (vanilla obsidian uses 50f, 1200f); tuned for "realm anchor" fantasy.
+		// ~5x obsidian break time in survival (vanilla obsidian destroy time 50f).
 		return BlockBehaviour.Properties.of()
 				.mapColor(MapColor.GOLD)
-				.strength(200.0F, 3600.0F)
-				.sound(SoundType.METAL)
-				.requiresCorrectToolForDrops();
+				.strength(250.0F, 3600.0F)
+				.sound(SoundType.WOOD)
+				.requiresCorrectToolForDrops()
+				.noOcclusion();
+	}
+
+	@Override
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+		builder.add(FACING);
+	}
+
+	@Override
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
+		return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
 	}
 
 	/**

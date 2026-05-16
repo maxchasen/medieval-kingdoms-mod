@@ -13,23 +13,21 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * After {@link Villager#finalizeSpawn} (breeding and other baby spawns), rolls {@link VillageRoleConfig} for server babies
- * and may set {@link com.medievalkingdoms.features.faction.MedievalKingdomsMobTags#VILLAGE_ROLE_ID} on entity custom data.
+ * After {@link Villager#finalizeSpawn}, rolls weighted mod roles for natural village spawns (babies and adults).
  */
 @Mixin(Villager.class)
 public class VillagerBabySpawnMixin {
 	@Inject(method = "finalizeSpawn", at = @At("RETURN"))
 	private void medieval_kingdoms$afterFinalizeSpawn(
-		ServerLevelAccessor serverLevelAccessor,
-		DifficultyInstance difficultyInstance,
-		EntitySpawnReason entitySpawnReason,
-		@Nullable SpawnGroupData spawnGroupData,
-		CallbackInfoReturnable<@Nullable SpawnGroupData> cir
-	) {
+			ServerLevelAccessor serverLevelAccessor,
+			DifficultyInstance difficultyInstance,
+			EntitySpawnReason entitySpawnReason,
+			@Nullable SpawnGroupData spawnGroupData,
+			CallbackInfoReturnable<@Nullable SpawnGroupData> cir) {
 		Villager self = (Villager) (Object) this;
-		if (self.level().isClientSide() || !self.isBaby()) {
+		if (self.level().isClientSide()) {
 			return;
 		}
-		VillageRoleSpawnHooks.onBabyVillagerSpawned(self);
+		VillageRoleSpawnHooks.onVillagerSpawned(self);
 	}
 }

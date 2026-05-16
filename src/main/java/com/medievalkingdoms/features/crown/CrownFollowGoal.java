@@ -127,12 +127,12 @@ public final class CrownFollowGoal extends Goal {
 	}
 
 	private boolean isWarlordForThisMob(ServerPlayer player, ServerLevel level) {
-		KingdomWorldData data = KingdomWorldData.get(level);
 		Optional<UUID> mobKingdom = MedievalKingdomsMobTags.readKingdomId(this.mob);
 		if (mobKingdom.isEmpty()) {
-			return data.isKingdomOwner(player.getUUID());
+			return false;
 		}
-		return data.getKingdom(mobKingdom.get())
+		return KingdomWorldData.get(level)
+				.getKingdom(mobKingdom.get())
 				.map(e -> player.getUUID().equals(e.owner()))
 				.orElse(false);
 	}

@@ -47,7 +47,10 @@ public final class VillagerKingdom {
 		refreshNametagsInVolume(level, volume, kingdomId);
 	}
 
-	/** Periodically call from villagers so walking into territory after the sigil exists still tags them. */
+	/**
+	 * Periodically call from villagers: unclaimed villagers inside a founded sigil's radius join that kingdom;
+	 * tagged villagers only refresh their nametag color.
+	 */
 	public static void tryTagFromNearbySigil(ServerLevel level, Villager villager) {
 		Optional<UUID> existing = MedievalKingdomsMobTags.readKingdomId(villager);
 		if (existing.isPresent()) {

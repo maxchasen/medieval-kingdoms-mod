@@ -56,4 +56,10 @@ public final class MedievalKingdomsMobTags {
 				.update(tag -> tag.putString(VILLAGE_ROLE_ID, roleId));
 		entity.setComponent(DataComponents.CUSTOM_DATA, next.isEmpty() ? CustomData.EMPTY : next);
 	}
+
+	public static void removeVillageRole(Entity entity) {
+		CustomData next = entity.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+				.update(tag -> tag.remove(VILLAGE_ROLE_ID));
+		entity.setComponent(DataComponents.CUSTOM_DATA, next.isEmpty() ? CustomData.EMPTY : next);
+	}
 }

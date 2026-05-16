@@ -20,12 +20,19 @@ import net.minecraft.world.item.ItemStack;
  * Renders combat / job mobs with the villager model, including held items and headwear
  * (vanilla villagers use crossed-arms item + custom head layers instead of humanoid armor).
  */
-public final class EconomyVillagerRenderer extends MobRenderer<PathfinderMob, VillagerRenderState, VillagerModel> {
+public class EconomyVillagerRenderer extends MobRenderer<PathfinderMob, VillagerRenderState, VillagerModel> {
 	private static final Identifier VILLAGER_SKIN =
 			Identifier.withDefaultNamespace("textures/entity/villager/villager.png");
 
+	private final Identifier texture;
+
 	public EconomyVillagerRenderer(EntityRendererProvider.Context context) {
+		this(context, VILLAGER_SKIN);
+	}
+
+	public EconomyVillagerRenderer(EntityRendererProvider.Context context, Identifier texture) {
 		super(context, new VillagerModel(context.bakeLayer(ModelLayers.VILLAGER)), 0.5F);
+		this.texture = texture;
 		this.addLayer(
 				new CustomHeadLayer<>(
 						this, context.getModelSet(), context.getPlayerSkinRenderCache(), VillagerRenderer.CUSTOM_HEAD_TRANSFORMS));
@@ -51,6 +58,6 @@ public final class EconomyVillagerRenderer extends MobRenderer<PathfinderMob, Vi
 
 	@Override
 	public Identifier getTextureLocation(VillagerRenderState state) {
-		return VILLAGER_SKIN;
+		return this.texture;
 	}
 }

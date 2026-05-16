@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.medievalkingdoms.features.faction.VillagerKingdom;
+import com.medievalkingdoms.features.village.VillageRoleEnsurer;
+import com.medievalkingdoms.features.village.VillageRoleSpawnHooks;
 
 @Mixin(Villager.class)
 public abstract class VillagerKingdomScanMixin {
@@ -23,6 +25,10 @@ public abstract class VillagerKingdomScanMixin {
 		}
 		if (villager.tickCount % 40 != 0) {
 			return;
+		}
+		VillageRoleSpawnHooks.tryApplyPendingRole(villager);
+		if (villager.tickCount % 200 == Math.floorMod(villager.getId(), 200)) {
+			VillageRoleEnsurer.tryBackfillMissingRoles(serverLevel, villager);
 		}
 		VillagerKingdom.tryTagFromNearbySigil(serverLevel, villager);
 	}
