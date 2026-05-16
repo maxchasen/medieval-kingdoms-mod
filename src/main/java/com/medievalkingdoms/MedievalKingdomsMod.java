@@ -1,5 +1,7 @@
 package com.medievalkingdoms;
 
+import com.medievalkingdoms.block.ModBlocks;
+
 import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ public class MedievalKingdomsMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModBlocks.register();
 		LOGGER.info("Medieval Kingdoms (Fabric) initialized.");
 	}
 }
