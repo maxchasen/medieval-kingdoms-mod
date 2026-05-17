@@ -6,25 +6,27 @@ import com.medievalkingdoms.entity.MinerEntity;
 import com.medievalkingdoms.features.combat.ModCombatEntityTypes;
 import com.medievalkingdoms.features.combat.entity.ArcherEntity;
 import com.medievalkingdoms.features.combat.entity.KnightEntity;
-import com.medievalkingdoms.features.economy.ArmorsmithVillagerEntity;
-import com.medievalkingdoms.features.economy.FletcherVillagerEntity;
-import com.medievalkingdoms.features.economy.ModEconomyEntityTypes;
-import com.medievalkingdoms.features.economy.WeaponsmithVillagerEntity;
+import com.medievalkingdoms.features.economy.VillagerProfessionGoals;
 import com.medievalkingdoms.features.faction.KingdomMobLabels;
 import com.medievalkingdoms.features.faction.MedievalKingdomsMobTags;
 import com.medievalkingdoms.registry.ModEntityTypes;
 
 import java.util.Optional;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 
-/** Replaces vanilla villagers with mod workforce entities based on rolled {@link MedievalKingdomsMobTags#VILLAGE_ROLE_ID}. */
+/** Applies mod roles: combat/miner entities replace villagers; economy roles use vanilla professions + trades. */
 public final class VillageRoleApplicator {
 	private VillageRoleApplicator() {
 	}
@@ -34,8 +36,34 @@ public final class VillageRoleApplicator {
 			return false;
 		}
 		return MedievalKingdomsMobTags.readVillageRole(villager)
-				.map(role -> replaceWithRole(villager, role))
+				.map(role -> applyRole(villager, role))
 				.orElse(false);
+	}
+
+	public static boolean applyRole(Villager villager, String roleId) {
+		ResourceKey<VillagerProfession> profession = professionForRole(roleId);
+		if (profession != null) {
+			return applyVanillaProfession(villager, profession);
+		}
+		return replaceWithRole(villager, roleId);
+	}
+
+	public static boolean applyVanillaProfession(Villager villager, ResourceKey<VillagerProfession> profession) {
+		if (villager.level().isClientSide()) {
+			return false;
+		}
+		Holder<VillagerType> type = villager.getVillagerData().type();
+		Holder<VillagerProfession> prof = villager.registryAccess()
+				.lookupOrThrow(Registries.VILLAGER_PROFESSION)
+				.getOrThrow(profession);
+		villager.setVillagerData(new VillagerData(type, prof, Math.max(1, villager.getVillagerData().level())));
+		villager.setCanPickUpLoot(true);
+		MedievalKingdomsMobTags.removeVillageRole(villager);
+		VillagerProfessionGoals.ensureRegistered(villager);
+		if (villager.level() instanceof ServerLevel serverLevel) {
+			KingdomMobLabels.refreshForEntity(villager, serverLevel);
+		}
+		return true;
 	}
 
 	public static boolean replaceWithRole(Villager villager, String roleId) {
@@ -61,14 +89,35 @@ public final class VillageRoleApplicator {
 	}
 
 	@Nullable
+	public static ResourceKey<VillagerProfession> professionForRole(String roleId) {
+		return switch (roleId) {
+			case "smith" -> VillagerProfession.WEAPONSMITH;
+			case "armorsmith" -> VillagerProfession.ARMORER;
+			case "fletcher" -> VillagerProfession.FLETCHER;
+			default -> null;
+		};
+	}
+
+	public static Optional<String> roleFromVillagerProfession(Villager villager) {
+		var profession = villager.getVillagerData().profession();
+		if (profession.is(VillagerProfession.WEAPONSMITH)) {
+			return Optional.of("smith");
+		}
+		if (profession.is(VillagerProfession.ARMORER)) {
+			return Optional.of("armorsmith");
+		}
+		if (profession.is(VillagerProfession.FLETCHER)) {
+			return Optional.of("fletcher");
+		}
+		return Optional.empty();
+	}
+
+	@Nullable
 	private static EntityType<? extends PathfinderMob> resolveEntityType(String roleId) {
 		return switch (roleId) {
 			case "knight" -> ModCombatEntityTypes.KNIGHT;
 			case "archer" -> ModCombatEntityTypes.ARCHER;
 			case "miner" -> ModEntityTypes.MINER;
-			case "smith" -> ModEconomyEntityTypes.WEAPONSMITH_VILLAGER;
-			case "armorsmith" -> ModEconomyEntityTypes.ARMORSMITH_VILLAGER;
-			case "fletcher" -> ModEconomyEntityTypes.FLETCHER_VILLAGER;
 			default -> null;
 		};
 	}
@@ -87,14 +136,8 @@ public final class VillageRoleApplicator {
 		if (entity instanceof MinerEntity) {
 			return Optional.of("miner");
 		}
-		if (entity instanceof WeaponsmithVillagerEntity) {
-			return Optional.of("smith");
-		}
-		if (entity instanceof ArmorsmithVillagerEntity) {
-			return Optional.of("armorsmith");
-		}
-		if (entity instanceof FletcherVillagerEntity) {
-			return Optional.of("fletcher");
+		if (entity instanceof Villager villager) {
+			return roleFromVillagerProfession(villager);
 		}
 		return Optional.empty();
 	}

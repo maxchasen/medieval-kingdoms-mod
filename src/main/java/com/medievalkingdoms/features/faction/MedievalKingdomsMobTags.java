@@ -17,6 +17,7 @@ public final class MedievalKingdomsMobTags {
 	public static final String KINGDOM_ID = "mk_kingdom";
 	/** Village / baby role id from weighted roll (e.g. {@code knight}, {@code archer}). */
 	public static final String VILLAGE_ROLE_ID = "mk_role";
+	public static final String ECONOMY_GOALS_REGISTERED = "mk_eco_goals";
 
 	private MedievalKingdomsMobTags() {
 	}
@@ -60,6 +61,19 @@ public final class MedievalKingdomsMobTags {
 	public static void removeVillageRole(Entity entity) {
 		CustomData next = entity.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
 				.update(tag -> tag.remove(VILLAGE_ROLE_ID));
+		entity.setComponent(DataComponents.CUSTOM_DATA, next.isEmpty() ? CustomData.EMPTY : next);
+	}
+
+	public static boolean hasEconomyGoalsRegistered(Entity entity) {
+		return entity.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+				.copyTag()
+				.getBoolean(ECONOMY_GOALS_REGISTERED)
+				.orElse(false);
+	}
+
+	public static void markEconomyGoalsRegistered(Entity entity) {
+		CustomData next = entity.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+				.update(tag -> tag.putBoolean(ECONOMY_GOALS_REGISTERED, true));
 		entity.setComponent(DataComponents.CUSTOM_DATA, next.isEmpty() ? CustomData.EMPTY : next);
 	}
 }

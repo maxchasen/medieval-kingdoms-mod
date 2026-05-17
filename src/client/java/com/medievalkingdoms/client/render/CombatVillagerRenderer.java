@@ -13,12 +13,15 @@ import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.npc.villager.VillagerType;
 
-public final class ProfessionVillagerRenderer extends EconomyVillagerRenderer {
+/**
+ * Knight / archer: villager skin + profession overlay; held gear uses crossed-arms item layer (readable at night).
+ */
+public final class CombatVillagerRenderer extends EconomyVillagerRenderer {
 	private final Holder<VillagerProfession> profession;
 
-	public ProfessionVillagerRenderer(EntityRendererProvider.Context context, ResourceKey<VillagerProfession> profession) {
+	public CombatVillagerRenderer(EntityRendererProvider.Context context, ResourceKey<VillagerProfession> professionKey) {
 		super(context);
-		this.profession = BuiltInRegistries.VILLAGER_PROFESSION.getOrThrow(profession);
+		this.profession = BuiltInRegistries.VILLAGER_PROFESSION.getOrThrow(professionKey);
 		this.addLayer(
 				new VillagerProfessionLayer<>(
 						this,

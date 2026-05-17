@@ -1,6 +1,6 @@
 package com.medievalkingdoms.client;
 
-import com.medievalkingdoms.client.render.ProfessionVillagerRenderer;
+import com.medievalkingdoms.client.render.CombatVillagerRenderer;
 import com.medievalkingdoms.features.combat.ModCombatEntityTypes;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -13,9 +13,9 @@ public final class CombatEntityClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		EntityRenderers.register(
 				ModCombatEntityTypes.KNIGHT,
-				context -> new ProfessionVillagerRenderer(context, VillagerProfession.WEAPONSMITH));
+				context -> new CombatVillagerRenderer(context, VillagerProfession.WEAPONSMITH));
 		EntityRenderers.register(
 				ModCombatEntityTypes.ARCHER,
-				context -> new ProfessionVillagerRenderer(context, VillagerProfession.FLETCHER));
+				context -> new CombatVillagerRenderer(context, VillagerProfession.FLETCHER));
 	}
 }

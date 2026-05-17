@@ -71,6 +71,7 @@ public final class VillageRoleEnsurer {
 		Set<String> present = new HashSet<>();
 		AABB volume = cohortBounds(anchor);
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, volume, v -> withinCohort(anchor, v))) {
+			VillageRoleApplicator.roleFromVillagerProfession(villager).ifPresent(present::add);
 			MedievalKingdomsMobTags.readVillageRole(villager)
 					.filter(VillageRoleCatalog::isAssignable)
 					.ifPresent(present::add);

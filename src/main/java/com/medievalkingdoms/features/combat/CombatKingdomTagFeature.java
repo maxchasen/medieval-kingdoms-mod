@@ -45,6 +45,7 @@ public final class CombatKingdomTagFeature implements ModInitializer {
 		if (entity instanceof KnightEntity knight) {
 			KingdomMobLabels.refreshForEntity(knight, world);
 		} else if (entity instanceof ArcherEntity archer) {
+			archer.ensureRangedLoadout();
 			KingdomMobLabels.refreshForEntity(archer, world);
 		} else if (entity instanceof MinerEntity miner) {
 			KingdomMobLabels.refreshForEntity(miner, world);

@@ -6,9 +6,6 @@ import java.util.UUID;
 import com.medievalkingdoms.entity.MinerEntity;
 import com.medievalkingdoms.features.combat.entity.ArcherEntity;
 import com.medievalkingdoms.features.combat.entity.KnightEntity;
-import com.medievalkingdoms.features.economy.ArmorsmithVillagerEntity;
-import com.medievalkingdoms.features.economy.FletcherVillagerEntity;
-import com.medievalkingdoms.features.economy.WeaponsmithVillagerEntity;
 import com.medievalkingdoms.features.realm.KingdomEntry;
 import com.medievalkingdoms.features.realm.KingdomWorldData;
 
@@ -57,10 +54,7 @@ public final class KingdomMobLabels {
 		return entity instanceof Villager
 				|| entity instanceof MinerEntity
 				|| entity instanceof KnightEntity
-				|| entity instanceof ArcherEntity
-				|| entity instanceof ArmorsmithVillagerEntity
-				|| entity instanceof WeaponsmithVillagerEntity
-				|| entity instanceof FletcherVillagerEntity;
+				|| entity instanceof ArcherEntity;
 	}
 
 	private static Component resolveRoleComponent(LivingEntity entity) {
@@ -75,15 +69,6 @@ public final class KingdomMobLabels {
 		}
 		if (entity instanceof MinerEntity) {
 			return Component.literal("Miner");
-		}
-		if (entity instanceof ArmorsmithVillagerEntity) {
-			return Component.literal("Armorsmith");
-		}
-		if (entity instanceof WeaponsmithVillagerEntity) {
-			return Component.literal("Weaponsmith");
-		}
-		if (entity instanceof FletcherVillagerEntity) {
-			return Component.literal("Fletcher");
 		}
 		return entity.getType().getDescription();
 	}

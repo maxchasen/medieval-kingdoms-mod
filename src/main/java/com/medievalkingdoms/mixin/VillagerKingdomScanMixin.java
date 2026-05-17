@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.medievalkingdoms.features.faction.VillagerKingdom;
+import com.medievalkingdoms.features.economy.VillagerProfessionGoals;
+import com.medievalkingdoms.features.village.VillageQuarryPlacer;
 import com.medievalkingdoms.features.village.VillageRoleEnsurer;
 import com.medievalkingdoms.features.village.VillageRoleSpawnHooks;
 
@@ -27,8 +29,10 @@ public abstract class VillagerKingdomScanMixin {
 			return;
 		}
 		VillageRoleSpawnHooks.tryApplyPendingRole(villager);
+		VillagerProfessionGoals.ensureRegistered(villager);
 		if (villager.tickCount % 200 == Math.floorMod(villager.getId(), 200)) {
 			VillageRoleEnsurer.tryBackfillMissingRoles(serverLevel, villager);
+			VillageQuarryPlacer.tryPlaceNearVillage(serverLevel, villager);
 		}
 		VillagerKingdom.tryTagFromNearbySigil(serverLevel, villager);
 	}

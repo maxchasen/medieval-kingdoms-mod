@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import com.medievalkingdoms.features.economy.IronMaterialPickupMob;
+import com.medievalkingdoms.mixin.MobPickupInvoker;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
@@ -133,6 +136,13 @@ public final class PickupIronMaterialsGoal extends Goal {
 		if (this.mob.distanceToSqr(this.targetItem) < TRY_PICKUP_DISTANCE_SQ) {
 			if (this.mob instanceof IronMaterialPickupMob pickupMob) {
 				pickupMob.tryPickupIronItem(this.targetItem);
+			} else if (this.mob instanceof Villager villager && this.mob.level() instanceof ServerLevel serverLevel) {
+				if (!this.targetItem.hasPickUpDelay()
+						&& villager.wantsToPickUp(serverLevel, this.targetItem.getItem())) {
+					((MobPickupInvoker) villager).medievalKingdoms$pickUpItem(serverLevel, this.targetItem);
+				}
+			} else {
+				mergeMatchingStacksIntoHands(this.mob, this.targetItem);
 			}
 			return;
 		}

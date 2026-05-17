@@ -32,7 +32,7 @@ public final class VillageRoleSpawnHooks {
 			LOGGER.debug("[medieval_kingdoms] Baby villager at {} assigned pending role '{}'", villager.blockPosition(), roleId);
 			return;
 		}
-		if (VillageRoleApplicator.replaceWithRole(villager, roleId)) {
+		if (VillageRoleApplicator.applyRole(villager, roleId)) {
 			LOGGER.info("[medieval_kingdoms] Villager at {} became role '{}'", villager.blockPosition(), roleId);
 		}
 	}

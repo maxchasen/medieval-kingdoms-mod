@@ -5,7 +5,10 @@
 	"mixins": [
 		"MedievalKingdomsMixin",
 		"VillagerBabySpawnMixin",
-		"VillagerKingdomScanMixin"
+		"VillagerIronPickupMixin",
+		"VillagerProfessionGoalsMixin",
+		"VillagerKingdomScanMixin",
+		"MobPickupInvoker"
 	],
 	"injectors": {
 		"defaultRequire": 1

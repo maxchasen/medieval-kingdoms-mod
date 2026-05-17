@@ -32,7 +32,6 @@
 		"client": [
 			"com.medievalkingdoms.client.MedievalKingdomsModClient",
 			"com.medievalkingdoms.client.CombatEntityClient",
-			"com.medievalkingdoms.client.EconomyEntityClient",
 			"com.medievalkingdoms.client.AllianceUiClient"
 		]
 	},

@@ -1,5 +1,7 @@
 package com.medievalkingdoms.features.combat.entity;
 
+import com.medievalkingdoms.features.combat.ai.ArcherPickupArrowsGoal;
+import com.medievalkingdoms.features.combat.ai.ArcherPickupArrowsGoal;
 import com.medievalkingdoms.features.crown.CrownFollowGoal;
 
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +35,7 @@ import org.jspecify.annotations.Nullable;
 public final class ArcherEntity extends PathfinderMob implements RangedAttackMob {
 	public ArcherEntity(EntityType<? extends ArcherEntity> entityType, Level level) {
 		super(entityType, level);
+		this.setCanPickUpLoot(true);
 	}
 
 	public static AttributeSupplier.Builder createAttributes() {
@@ -47,15 +50,22 @@ public final class ArcherEntity extends PathfinderMob implements RangedAttackMob
 	protected void registerGoals() {
 		this.goalSelector.addGoal(0, new FloatGoal(this));
 		this.goalSelector.addGoal(1, new CrownFollowGoal(this));
-		this.goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0D, 20, 40, 15.0F));
+		this.goalSelector.addGoal(2, new ArcherPickupArrowsGoal(this, 1.0D));
+		this.goalSelector.addGoal(3, new RangedAttackGoal(this, 1.0D, 20, 40, 15.0F));
 		this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.6D));
 		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
 		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Monster.class, true));
 	}
 
 	@Override
+	public ItemStack getProjectile(ItemStack weaponStack) {
+		return new ItemStack(Items.ARROW);
+	}
+
+	@Override
 	public void performRangedAttack(LivingEntity target, float power) {
-		ItemStack bow = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, Items.BOW));
+		ensureRangedLoadout();
+		ItemStack bow = this.getMainHandItem();
 		ItemStack projectileStack = this.getProjectile(bow);
 		AbstractArrow arrow = ProjectileUtil.getMobArrow(this, projectileStack, power, bow);
 		double dx = target.getX() - this.getX();
@@ -68,6 +78,17 @@ public final class ArcherEntity extends PathfinderMob implements RangedAttackMob
 		}
 
 		this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+	}
+
+	@Override
+	public boolean wantsToPickUp(ServerLevel serverLevel, ItemStack stack) {
+		return stack.is(Items.ARROW) || super.wantsToPickUp(serverLevel, stack);
+	}
+
+	public void ensureRangedLoadout() {
+		if (!this.getMainHandItem().is(Items.BOW)) {
+			this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+		}
 	}
 
 	@Nullable

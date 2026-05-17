@@ -27,16 +27,26 @@ public class EconomyVillagerRenderer extends MobRenderer<PathfinderMob, Villager
 	private final Identifier texture;
 
 	public EconomyVillagerRenderer(EntityRendererProvider.Context context) {
-		this(context, VILLAGER_SKIN);
+		this(context, VILLAGER_SKIN, true);
+	}
+
+	public EconomyVillagerRenderer(EntityRendererProvider.Context context, boolean crossedArmsItemLayer) {
+		this(context, VILLAGER_SKIN, crossedArmsItemLayer);
 	}
 
 	public EconomyVillagerRenderer(EntityRendererProvider.Context context, Identifier texture) {
+		this(context, texture, true);
+	}
+
+	public EconomyVillagerRenderer(EntityRendererProvider.Context context, Identifier texture, boolean crossedArmsItemLayer) {
 		super(context, new VillagerModel(context.bakeLayer(ModelLayers.VILLAGER)), 0.5F);
 		this.texture = texture;
 		this.addLayer(
 				new CustomHeadLayer<>(
 						this, context.getModelSet(), context.getPlayerSkinRenderCache(), VillagerRenderer.CUSTOM_HEAD_TRANSFORMS));
-		this.addLayer(new CrossedArmsItemLayer<>(this));
+		if (crossedArmsItemLayer) {
+			this.addLayer(new CrossedArmsItemLayer<>(this));
+		}
 	}
 
 	@Override
